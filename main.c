@@ -5,6 +5,9 @@
 #define ARGV_MAX 101
 #define MEM_ACCESS_MAX 2000
 
+/* Retorna 2 elevado à n. */
+#define pow2(x) (1<<(x))
+
 struct MemAccess
 {
     char rw;
@@ -13,10 +16,8 @@ struct MemAccess
 
 typedef struct MemAccess MemAccess;
 
-/* Retorna 2 elevado à n. */
-int pow2(int n) {
-    if (n == 0) return 1;
-    else return 2 << (n - 1);
+void print_usage(void) {
+
 }
 
 void parse_args(int argc, 
@@ -24,15 +25,20 @@ void parse_args(int argc,
                char *alg, 
                char *filename_in, 
                int *p_size_kb, 
-               int *phys_mem_kb) {
-    if (argc != 5) {
-        printf("ERRO: numero de parametros incorreto.\nRecebidos %d, esperava 5.\n", argc);
-        exit(1);
-    } else {
+               int *phys_mem_kb,
+               int *debug_mode) {
+    if (argc >= 5) {
         strcpy(alg, argv[1]);
         strcpy(filename_in, argv[2]);
         *p_size_kb = atoi(argv[3]);
         *phys_mem_kb = atoi(argv[4]);
+        if (argc >= 6) {
+            *debug_mode = atoi(argv[5]);
+        }
+    }
+    else {
+        print_usage();
+        exit(EXIT_FAILURE); 
     }
 }
 
@@ -44,7 +50,7 @@ int MemAccess_load(FILE *fp, MemAccess *mem_access) {
     while(fscanf(fp, "%x %c ", &addr, &rw) == 2) {
         if (i >= MEM_ACCESS_MAX) {
             printf("ERROR: ultrapassado numero maximo de linhas no arquivo de log.\n");
-            exit(1);
+            exit(EXIT_FAILURE);
         }
         mem_access[i].addr = addr;
         mem_access[i].rw = rw;
@@ -67,12 +73,12 @@ void MemAccess_print_all(MemAccess *mem_access, int size) {
 
 int main(int argc, char *argv[]) {
     char alg[ARGV_MAX], filename_in[ARGV_MAX];
-    int p_size_kb, phys_mem_kb;
+    int p_size_kb, phys_mem_kb, debug_mode = 0;
     FILE *fp;
     MemAccess mem_access[MEM_ACCESS_MAX];
     int mem_access_size;
 
-    parse_args(argc, argv, alg, filename_in, &p_size_kb, &phys_mem_kb);
+    parse_args(argc, argv, alg, filename_in, &p_size_kb, &phys_mem_kb, &debug_mode);
 
     fp = (FILE *) fopen(filename_in, "r");
     if (!fp) {
@@ -87,6 +93,7 @@ int main(int argc, char *argv[]) {
     printf("Tamanho da memoria: %d\n", phys_mem_kb);
     printf("Tamanho das paginas: %d\n", p_size_kb);
     printf("Alg de substituicao: %s\n", alg);
+    printf("Numero total de acessos a memoria: %d\n", mem_access_size);
 
     MemAccess_print_all(mem_access, mem_access_size);
 
