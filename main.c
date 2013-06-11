@@ -6,7 +6,16 @@
 #define MEM_ACCESS_MAX 2000
 
 /* Retorna 2 elevado à n. */
-#define pow2(x) (1<<(x))
+#define pow2(x) (1u<<(x))
+
+unsigned lg2(unsigned x) {
+    unsigned r = 0u;
+    while(x > 1u) {
+       x = x >> 1u; 
+       r++;
+    }
+    return r; 
+}
 
 struct MemAccess
 {
@@ -47,6 +56,9 @@ int MemAccess_load(FILE *fp, MemAccess *mem_access) {
     unsigned addr;
     char rw;
 
+    assert(fp);
+    assert(mem_access);
+
     while(fscanf(fp, "%x %c ", &addr, &rw) == 2) {
         if (i >= MEM_ACCESS_MAX) {
             printf("ERROR: ultrapassado numero maximo de linhas no arquivo de log.\n");
@@ -66,9 +78,23 @@ void MemAccess_print(MemAccess mem_access) {
 
 void MemAccess_print_all(MemAccess *mem_access, int size) {
     int i;
+
+    assert(mem_access);
+    assert(size >= 0);
+
     for (i = 0; i < size; i++) {
         MemAccess_print(mem_access[i]);
     }
+}
+
+/* * * * * * * *
+ * vir_to_p
+ *
+ * Retorna o índice de uma página baseado em um endereço lógico.
+ * Por exemplo,
+ */
+unsigned vir_to_p(unsigned addr, unsigned p_size_kb) {
+    return addr >> (lg2(p_size_kb) + 10u);
 }
 
 int main(int argc, char *argv[]) {
