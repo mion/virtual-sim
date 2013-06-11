@@ -1,9 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
+
+#define TRUE 1
+#define FALSE 0
 
 #define ARGV_MAX 101
 #define MEM_ACCESS_MAX 2000
+
+#define IS_PAGE_FAULT(page) (page == NULL)
 
 /* Retorna 2 elevado à n. */
 #define pow2(x) (1u<<(x))
@@ -17,13 +23,76 @@ unsigned lg2(unsigned x) {
     return r; 
 }
 
-struct MemAccess
-{
+typedef struct MemAccess {
     char rw;
     unsigned addr;
-};
+} MemAccess;
 
-typedef struct MemAccess MemAccess;
+typedef struct SimulatorInput {
+    MemAccess mem_accesses[MEM_ACCESS_MAX];
+    int size;
+} SimulatorInput;
+
+void load(FILE *fp, SimulatorInput *sim_input) {
+    int i = 0;
+    unsigned addr;
+    char rw;
+
+    assert(fp);
+    assert(sim_input);
+
+    while(fscanf(fp, "%x %c ", &addr, &rw) == 2) {
+        if (i >= MEM_ACCESS_MAX) {
+            printf("ERROR: ultrapassado numero maximo de linhas no arquivo de log.\n");
+            exit(EXIT_FAILURE);
+        }
+        sim_input->mem_accesses[i].addr = addr;
+        sim_input->mem_accesses[i].rw = rw;
+        i++;
+    }
+
+    sim_input->size = i;
+
+    return;
+}
+
+void MemAccess_print(MemAccess mem_access) {
+    printf("0x%08x - %c\n", mem_access.addr, mem_access.rw);
+}
+
+void SimulatorInput_print(SimulatorInput *sim_input) {
+    int i;
+
+    assert(sim_input);
+
+    for (i = 0; i < sim_input->size; i++) {
+        MemAccess_print(sim_input->mem_accesses[i]);
+    }
+}
+
+typedef struct Page
+{
+    int r_flag, m_flag, last_access_counter;
+} Page;
+
+typedef struct VirtualMem
+{
+    Page *p_table;
+    int size;
+} VirtualMem;
+
+
+/* * * * * * * *
+ * vir_to_p
+ *
+ * Retorna o índice de uma página baseado em um endereço lógico.
+ * Por exemplo,
+ */
+unsigned vir_to_p(unsigned addr, unsigned p_size_kb) {
+    assert(p_size_kb > 0);
+
+    return addr >> (lg2(p_size_kb) + 10u);
+}
 
 void print_usage(void) {
 
@@ -36,6 +105,7 @@ void parse_args(int argc,
                int *p_size_kb, 
                int *phys_mem_kb,
                int *debug_mode) {
+
     if (argc >= 5) {
         strcpy(alg, argv[1]);
         strcpy(filename_in, argv[2]);
@@ -51,58 +121,11 @@ void parse_args(int argc,
     }
 }
 
-int MemAccess_load(FILE *fp, MemAccess *mem_access) {
-    int i = 0;
-    unsigned addr;
-    char rw;
-
-    assert(fp);
-    assert(mem_access);
-
-    while(fscanf(fp, "%x %c ", &addr, &rw) == 2) {
-        if (i >= MEM_ACCESS_MAX) {
-            printf("ERROR: ultrapassado numero maximo de linhas no arquivo de log.\n");
-            exit(EXIT_FAILURE);
-        }
-        mem_access[i].addr = addr;
-        mem_access[i].rw = rw;
-        i++;
-    }
-
-    return i;
-}
-
-void MemAccess_print(MemAccess mem_access) {
-    printf("0x%08x - %c\n", mem_access.addr, mem_access.rw);
-}
-
-void MemAccess_print_all(MemAccess *mem_access, int size) {
-    int i;
-
-    assert(mem_access);
-    assert(size >= 0);
-
-    for (i = 0; i < size; i++) {
-        MemAccess_print(mem_access[i]);
-    }
-}
-
-/* * * * * * * *
- * vir_to_p
- *
- * Retorna o índice de uma página baseado em um endereço lógico.
- * Por exemplo,
- */
-unsigned vir_to_p(unsigned addr, unsigned p_size_kb) {
-    return addr >> (lg2(p_size_kb) + 10u);
-}
-
 int main(int argc, char *argv[]) {
     char alg[ARGV_MAX], filename_in[ARGV_MAX];
     int p_size_kb, phys_mem_kb, debug_mode = 0;
     FILE *fp;
-    MemAccess mem_access[MEM_ACCESS_MAX];
-    int mem_access_size;
+    SimulatorInput sim_input;
 
     parse_args(argc, argv, alg, filename_in, &p_size_kb, &phys_mem_kb, &debug_mode);
 
@@ -111,7 +134,7 @@ int main(int argc, char *argv[]) {
         printf("ERRO: nao foi possivel abrir o arquivo '%s'.\n", filename_in);
         exit(1);
     }
-    mem_access_size = MemAccess_load(fp, mem_access);
+    load(fp, &sim_input);
     fclose(fp);
 
     printf("Executando o simulador...\n");
@@ -119,9 +142,9 @@ int main(int argc, char *argv[]) {
     printf("Tamanho da memoria: %d\n", phys_mem_kb);
     printf("Tamanho das paginas: %d\n", p_size_kb);
     printf("Alg de substituicao: %s\n", alg);
-    printf("Numero total de acessos a memoria: %d\n", mem_access_size);
+    printf("Numero total de acessos a memoria: %d\n", sim_input.size);
 
-    MemAccess_print_all(mem_access, mem_access_size);
+    SimulatorInput_print(&sim_input); 
 
     return 0;
 }
