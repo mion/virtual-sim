@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
     printf("Tamanho da memoria: %d\n", phys_mem_kb);
     printf("Tamanho das paginas: %d\n", p_size_kb);
     printf("Alg de substituicao: %s\n", alg);
-    printf("Numero total de acessos a memoria: %d\n", sim.size);
+    printf("Numero total de acessos a memoria: %d\n", SimulatorSize(&sim));
 
     SimulatorPrint(&sim); 
 

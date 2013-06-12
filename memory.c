@@ -4,6 +4,13 @@
 #include <assert.h>
 #define IS_PAGE_FAULT(page) (page == NULL)
 
+struct VirtualPage
+{
+    int r_flag,
+        m_flag,
+        last_access;
+};
+
 /* * * * * * * *
  * vir_to_p
  *

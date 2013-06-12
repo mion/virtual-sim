@@ -10,13 +10,15 @@ typedef struct MemAccess {
     unsigned addr;
 } MemAccess;
 
-typedef struct Simulator {
+struct Simulator {
     MemAccess mem_accesses[MEM_ACCESS_MAX];
     int size;
-} Simulator;
+};
 
-void MemAccessPrint(MemAccess mem_access);
+typedef struct Simulator Simulator;
+
 void SimulatorPrint(Simulator *sim);
 void SimulatorLoad(FILE *fp, Simulator *sim);
+int SimulatorSize(Simulator *sim);
 
 #endif

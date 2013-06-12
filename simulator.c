@@ -4,6 +4,20 @@
 #include <stdio.h>
 #include <assert.h>
 
+void MemAccessPrint(MemAccess mem_access) {
+    printf("0x%08x - %c\n", mem_access.addr, mem_access.rw);
+}
+
+void SimulatorPrint(Simulator *sim) {
+    int i;
+
+    assert(sim);
+
+    for (i = 0; i < sim->size; i++) {
+        MemAccessPrint(sim->mem_accesses[i]);
+    }
+}
+
 void SimulatorLoad(FILE *fp, Simulator *sim) {
     int i = 0;
     unsigned addr;
@@ -27,16 +41,6 @@ void SimulatorLoad(FILE *fp, Simulator *sim) {
     return;
 }
 
-void MemAccessPrint(MemAccess mem_access) {
-    printf("0x%08x - %c\n", mem_access.addr, mem_access.rw);
-}
-
-void SimulatorPrint(Simulator *sim) {
-    int i;
-
-    assert(sim);
-
-    for (i = 0; i < sim->size; i++) {
-        MemAccessPrint(sim->mem_accesses[i]);
-    }
+int SimulatorSize(Simulator *sim) {
+    return sim->size;
 }
