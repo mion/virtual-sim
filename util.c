@@ -8,3 +8,10 @@ unsigned lg2(unsigned x) {
     }
     return r; 
 }
+
+void mcheck(void *ptr) {
+    if (!ptr) {
+        printf("ERRO: falha ao alocar memoria.\n");
+        exit(1);
+    }
+}
