@@ -1,6 +1,7 @@
 #ifndef MEMORY_H_
 #define MEMORY_H_ 
 
-typedef struct Memory Memory;
+void MemoryInit(int p_size_kb, int phys_mem_kb);
+int MemoryClockInterrupt();
 
 #endif

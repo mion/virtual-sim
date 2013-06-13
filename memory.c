@@ -9,16 +9,12 @@ struct VirtualPage
     int r_flag,
         m_flag,
         last_access;
-};
+} *p_table;
 
-/* * * * * * * *
- * vir_to_p
- *
- * Retorna o índice de uma página baseado em um endereço lógico.
- * Por exemplo,
- */
+/* Retorna o índice de uma página baseado em um endereço lógico. */
 unsigned vir_to_p(unsigned addr, unsigned p_size_kb) {
     assert(p_size_kb > 0);
 
     return addr >> (lg2(p_size_kb) + 10u);
 }
+

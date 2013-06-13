@@ -49,12 +49,16 @@ int main(int argc, char *argv[]) {
     /* Inicializa simulador com o arquivo de entrada. */
     init(filename_in, &sim);
 
+    sim.p_size_kb = p_size_kb;
+    sim.phys_mem_kb = phys_mem_kb;
+    sim.debug_mode = debug_mode;
+
     printf("Executando o simulador...\n");
     printf("Arquivo de entrada: %s\n", filename_in);
     printf("Tamanho da memoria: %d\n", phys_mem_kb);
     printf("Tamanho das paginas: %d\n", p_size_kb);
     printf("Alg de substituicao: %s\n", alg);
-    printf("Numero total de acessos a memoria: %d\n", SimulatorSize(&sim));
+    printf("Numero total de acessos a memoria: %d\n", SimulatorLength(&sim));
 
     SimulatorPrint(&sim); 
 

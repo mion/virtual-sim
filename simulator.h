@@ -12,13 +12,15 @@ typedef struct MemAccess {
 
 struct Simulator {
     MemAccess mem_accesses[MEM_ACCESS_MAX];
-    int size;
+    char alg[31];
+    int length, p_size_kb, phys_mem_kb, debug_mode;
 };
 
 typedef struct Simulator Simulator;
 
 void SimulatorPrint(Simulator *sim);
 void SimulatorLoad(FILE *fp, Simulator *sim);
-int SimulatorSize(Simulator *sim);
+int SimulatorLength(Simulator *sim);
+void SimulatorRun(Simulator *sim, int options);
 
 #endif

@@ -1,4 +1,5 @@
 #include "simulator.h"
+#include "memory.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -13,7 +14,7 @@ void SimulatorPrint(Simulator *sim) {
 
     assert(sim);
 
-    for (i = 0; i < sim->size; i++) {
+    for (i = 0; i < sim->length; i++) {
         MemAccessPrint(sim->mem_accesses[i]);
     }
 }
@@ -36,11 +37,50 @@ void SimulatorLoad(FILE *fp, Simulator *sim) {
         i++;
     }
 
-    sim->size = i;
+    sim->length = i;
 
     return;
 }
 
-int SimulatorSize(Simulator *sim) {
-    return sim->size;
+int SimulatorLength(Simulator *sim) {
+    return sim->length;
+}
+
+/*
+The R and M bits can be used to build a simple paging algorithm as follows. When a process is
+started up, both page bits for all its pages are set to 0 by the operating system. Periodically (e.g.,
+on each clock interrupt), the R bit is cleared, to distinguish pages that have not been referenced
+recently from those that have been.
+When a page fault occurs, the operating system inspects all the pages and divides them into four
+categories based on the current values of their R and M bits:
+
+Class 0: not referenced, not modified.
+Class 1: not referenced, modified.
+Class 2: referenced, not modified.
+Class 3: referenced, modified.
+
+Although class 1 pages seem, at first glance, impossible, they occur when a class 3 page has its R
+bit cleared by a clock interrupt. Clock interrupts do not clear the M bit because this information is
+needed to know whether the page has to be rewritten to disk or not. Clearing R but not M leads to
+a class 1 page.
+
+*/
+
+void SimulatorRun(Simulator *sim, int options) {
+    int i;
+
+    MemoryInit(sim->p_size_kb, sim->phys_mem_kb);
+
+    for (i = 0; i < sim->length; i++) {
+        int virtual_address = sim->mem_accesses[i].addr;
+        char rw = sim->mem_accesses[i].rw; 
+
+        assert(rw == 'R' || rw == 'W');
+
+        MemoryClockInterrupt();
+        if (rw == 'R')
+            MemoryRead(virtual_address);
+        else
+            MemoryWrite(virtual_address);
+    }
 }
