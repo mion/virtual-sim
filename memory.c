@@ -16,6 +16,8 @@ struct VirtualPage
     unsigned frame_index;
 } *p_table;
 
+typedef struct VirtualPage VirtualPage;
+
 /* Interno */
 int clock_counter;
 int num_virtual_pages;
@@ -60,6 +62,8 @@ void MemoryInit(int p_size_kb, int phys_mem_kb) {
 }
 
 void MemoryClockInterrupt(void) {
+    int i;
+
     for (i = 0; i < num_virtual_pages; i++) {
         p_table[i].referenced =  FALSE;       
     }
@@ -93,7 +97,7 @@ void MemoryRead(unsigned addr) {
         if (p_table[index].modified) {    
             num_writes_to_disk++; /* Coloca o quadro de página no disco. */
         }
-        
+
         p_table[index].frame_index = f_index; 
     }
 }

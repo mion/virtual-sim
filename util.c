@@ -1,5 +1,8 @@
 #include "util.h"
 
+#include <stdlib.h>
+#include <stdio.h>
+
 unsigned lg2(unsigned x) {
     unsigned r = 0u;
     while(x > 1u) {
