@@ -3,7 +3,7 @@
 
 void MemoryInit(int p_size_kb, int phys_mem_kb);
 void MemoryClockInterrupt(void);
-void MemoryRead(unsigned addr);
-void MemoryWrite(unsigned addr);
+void MemoryAccess(unsigned addr, char rw);
+void MemoryStatistics(int* n_writes, int* n_pfaults);
 
 #endif

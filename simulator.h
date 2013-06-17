@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#define MEM_ACCESS_MAX 2000
+#define MEM_ACCESS_MAX 2000000
 
 typedef struct MemAccess {
     char rw;
@@ -22,5 +22,6 @@ void SimulatorPrint(Simulator *sim);
 void SimulatorLoad(FILE *fp, Simulator *sim);
 int SimulatorLength(Simulator *sim);
 void SimulatorRun(Simulator *sim, int options);
+void SimulatorPrintResults(Simulator *sim);
 
 #endif

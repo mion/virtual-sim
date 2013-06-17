@@ -76,7 +76,6 @@ implement, and gives a performance that, while certainly not optimal, may be ade
 void SimulatorRun(Simulator *sim, int options) {
     int i;
 
-    /*  */
     MemoryInit(sim->p_size_kb, sim->phys_mem_kb);
 
     for (i = 0; i < sim->length; i++) {
@@ -85,10 +84,13 @@ void SimulatorRun(Simulator *sim, int options) {
 
         assert(rw == 'R' || rw == 'W');
 
+        MemoryAccess(addr, rw);
         MemoryClockInterrupt();
-        if (rw == 'R')
-            MemoryRead(addr);
-        else
-            MemoryWrite(addr);
     }
+}
+
+void SimulatorPrintResults(Simulator *sim) {
+    int n_writes, n_pfaults;
+    MemoryStatistics(&n_writes, &n_pfaults);
+    printf("Paginas lidas: %d\nPaginas escritas: %d\n", n_pfaults, n_writes);
 }

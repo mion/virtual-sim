@@ -53,14 +53,16 @@ int main(int argc, char *argv[]) {
     sim.phys_mem_kb = phys_mem_kb;
     sim.debug_mode = debug_mode;
 
-    printf("Executando o simulador...\n");
-    printf("Arquivo de entrada: %s\n", filename_in);
-    printf("Tamanho da memoria: %d\n", phys_mem_kb);
-    printf("Tamanho das paginas: %d\n", p_size_kb);
-    printf("Alg de substituicao: %s\n", alg);
-    printf("Numero total de acessos a memoria: %d\n", SimulatorLength(&sim));
-
-    SimulatorPrint(&sim); 
+    printf("--- CONFIGURACAO DE ENTRADA ---\n");
+    printf("\tArquivo de entrada: %s\n", filename_in);
+    printf("\tTamanho da memoria: %d\n", phys_mem_kb);
+    printf("\tTamanho das paginas: %d\n", p_size_kb);
+    printf("\tAlg de substituicao: %s\n", alg);
+    printf("\tNumero total de acessos a memoria: %d\n", SimulatorLength(&sim));
+    printf("\n[!] Executando simulacao, por favor aguarde...\n\n");
+    printf("--- RESULTADO DA SIMULACAO ---\n");
+    SimulatorRun(&sim, 0);
+    SimulatorPrintResults(&sim); 
 
     return 0;
 }
