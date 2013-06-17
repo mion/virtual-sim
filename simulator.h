@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#define MEM_ACCESS_MAX 2000000
+#define MEM_ACCESS_MAX 1000005 /* OBS: 2m aqui causa segfault (provavelmente por overflow no heap)! */
 
 typedef struct MemAccess {
     char rw;

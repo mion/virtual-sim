@@ -8,7 +8,7 @@
 #define ARGV_MAX 101
 
 void parse_args(int argc, 
-               char *argv[], 
+               char const *argv[], 
                char *alg, 
                char *filename_in, 
                int *p_size_kb, 
@@ -39,10 +39,12 @@ void init(char *filename_in, Simulator *sim) {
     fclose(fp);
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char const *argv[]) {
     char alg[ARGV_MAX], filename_in[ARGV_MAX];
     int p_size_kb, phys_mem_kb, debug_mode = 0;
     Simulator sim;
+
+    printf("sim-virtual v0.1.0\n");
 
     parse_args(argc, argv, alg, filename_in, &p_size_kb, &phys_mem_kb, &debug_mode);
 
@@ -62,7 +64,7 @@ int main(int argc, char *argv[]) {
     printf("\n[!] Executando simulacao, por favor aguarde...\n\n");
     printf("--- RESULTADO DA SIMULACAO ---\n");
     SimulatorRun(&sim, 0);
-    SimulatorPrintResults(&sim); 
+    SimulatorPrintResults(&sim);
 
     return 0;
 }
