@@ -84,7 +84,7 @@ void MemoryDestroy(void) {
 }
 
 void MemoryClockInterrupt(void) {
-    int i;
+    // int i;
 
     // for (i = 0; i < num_virtual_pages; i++) {
     //     p_table[i].referenced =  FALSE;       

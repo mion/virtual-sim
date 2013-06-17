@@ -81,8 +81,7 @@ void SimulatorRun(Simulator *sim, int options) {
     MemoryInit(sim->p_size_kb, sim->phys_mem_kb);
 
     for (i = 0; i < sim->length; i++) {
-        if ((i % 1000) == 0)
-            printf("------ %d / %d [%.2f]\n", i, sim->length, (100.0f * i) / sim->length);
+        DEBUG if ((i % 1000) == 0) printf("------ %d / %d [%.2f]\n", i, sim->length, (100.0f * i) / sim->length);
 
         MemoryAccess(sim->mem_accesses[i].addr, sim->mem_accesses[i].rw);
         MemoryClockInterrupt();

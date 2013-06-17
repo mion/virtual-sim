@@ -5,7 +5,7 @@
 #define FALSE 0
 
 #if 0
-#define DEBUG 
+#define DEBUG
 #else
 #define DEBUG if(0)
 #endif
