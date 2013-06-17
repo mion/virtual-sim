@@ -91,10 +91,14 @@ void MemoryRead(unsigned addr) {
 
     /* Page fault? */
     if (p_table[index].frame_index == NOT_IN_MEMORY) {
+        /* Quando ocorre uma 'page fault', deve-se escolher uma página para
+        ser retirada da memória. */
         int f_index = choose_page_frame();
         evict_page(f_index);
 
-        if (p_table[index].modified) {    
+        /* Se a página foi modificada, é necessário rescrever-la no HD,
+        para atualizar a cópia que estava no disco. */
+        if (p_table[index].modified) {
             num_writes_to_disk++; /* Coloca o quadro de página no disco. */
         }
 
