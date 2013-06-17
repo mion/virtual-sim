@@ -4,6 +4,12 @@
 #define TRUE 1
 #define FALSE 0
 
+#if 0
+#define DEBUG 
+#else
+#define DEBUG if(0)
+#endif
+
 /* Retorna 2 elevado à n. */
 #define pow2(x) (1u<<(x))
 

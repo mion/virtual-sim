@@ -1,5 +1,6 @@
 #include "simulator.h"
 #include "memory.h"
+#include "util.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -34,6 +35,7 @@ void SimulatorLoad(FILE *fp, Simulator *sim) {
         }
         sim->mem_accesses[i].addr = addr;
         sim->mem_accesses[i].rw = rw;
+        assert(rw == 'R' || rw == 'W');
         i++;
     }
 
@@ -79,14 +81,14 @@ void SimulatorRun(Simulator *sim, int options) {
     MemoryInit(sim->p_size_kb, sim->phys_mem_kb);
 
     for (i = 0; i < sim->length; i++) {
-        unsigned addr = sim->mem_accesses[i].addr;
-        char rw = sim->mem_accesses[i].rw; 
+        if ((i % 1000) == 0)
+            printf("------ %d / %d [%.2f]\n", i, sim->length, (100.0f * i) / sim->length);
 
-        assert(rw == 'R' || rw == 'W');
-
-        MemoryAccess(addr, rw);
+        MemoryAccess(sim->mem_accesses[i].addr, sim->mem_accesses[i].rw);
         MemoryClockInterrupt();
     }
+
+    MemoryDestroy();
 }
 
 void SimulatorPrintResults(Simulator *sim) {

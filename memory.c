@@ -8,14 +8,18 @@
 
 #define NOT_IN_MEMORY -1
 
-struct VirtualPage {
-    int referenced,
-        modified,
-        last_access;
-    unsigned frame_index;
-} *p_table;
+typedef struct VirtualPage {
+    int referenced, modified, last_access;
+    int frame_index;
+} VirtualPage;
 
-typedef struct VirtualPage VirtualPage;
+VirtualPage *p_table; /* Page table */
+
+typedef struct PageFrame {
+    int v_ind; /* Índice na tabela de páginas virtuais (p_table) */
+} PageFrame;
+
+PageFrame *frames;
 
 typedef enum {
     RANDOM,
@@ -60,19 +64,31 @@ void MemoryInit(int p_size_kb, int phys_mem_kb) {
     p_table = (VirtualPage *) malloc(num_virtual_pages * sizeof(VirtualPage));
     mcheck(p_table); 
 
+    frames = (PageFrame *) malloc(num_page_frames * sizeof(PageFrame));
+    mcheck(frames);
+
     for (i = 0; i < num_virtual_pages; i++) {
         p_table[i].referenced = p_table[i].modified = FALSE; 
         p_table[i].last_access = 0;
         p_table[i].frame_index = NOT_IN_MEMORY;
     }
+
+    for (i = 0; i < num_page_frames; i++) {
+        frames[i].v_ind = NOT_IN_MEMORY;
+    }
+}
+
+void MemoryDestroy(void) {
+    free(p_table); 
+    free(frames);
 }
 
 void MemoryClockInterrupt(void) {
     int i;
 
-    for (i = 0; i < num_virtual_pages; i++) {
-        p_table[i].referenced =  FALSE;       
-    }
+    // for (i = 0; i < num_virtual_pages; i++) {
+    //     p_table[i].referenced =  FALSE;       
+    // }
 }
 
 int choose_page_frame(PRAlgorithm algo) {
@@ -85,16 +101,15 @@ int choose_page_frame(PRAlgorithm algo) {
 }
 
 int evict_page(int frame_index) {
-    int i;
+    int i = frames[frame_index].v_ind;
 
-    for (i = 0; i < num_virtual_pages; i++) {
-        if (p_table[i].frame_index == frame_index) {
-            p_table[i].frame_index = NOT_IN_MEMORY;
-            return i;
-        }
+    if (i != NOT_IN_MEMORY) {
+        p_table[i].frame_index = NOT_IN_MEMORY;
+        frames[frame_index].v_ind = NOT_IN_MEMORY;
+        return i;
+    } else {
+        return -1;
     }
-
-    return -1;
 }
 
 void check_modified(int p_index) {
@@ -105,6 +120,8 @@ void check_modified(int p_index) {
 
 void load_page(int p_index, int f_index, char rw) {
     p_table[p_index].frame_index = f_index;
+    frames[f_index].v_ind = p_index;
+
     if (rw == 'W')
         p_table[p_index].modified = TRUE;
 }
@@ -114,12 +131,14 @@ void MemoryAccess(unsigned addr, char rw) {
 
     p_table[i].referenced = TRUE;
 
+    DEBUG printf("Acesso %c em %x, i = %d\n", rw, addr, i);
+
     /* Page fault? */
     if (p_table[i].frame_index == NOT_IN_MEMORY) {
         /* Algoritmo só entra em ação quando a memória física estiver cheia. */
         if (num_used_page_frames < num_page_frames) { 
+            load_page(i, num_used_page_frames, rw);
             num_used_page_frames += 1;
-            load_page(i, choose_page_frame(RANDOM), rw);
         } else {
             int f_index, p_removed_index;
 
