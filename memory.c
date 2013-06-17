@@ -8,8 +8,7 @@
 
 #define NOT_IN_MEMORY -1
 
-struct VirtualPage
-{
+struct VirtualPage {
     int referenced,
         modified,
         last_access;
@@ -17,6 +16,11 @@ struct VirtualPage
 } *p_table;
 
 typedef struct VirtualPage VirtualPage;
+
+typedef enum {
+    RANDOM,
+    NRU 
+} PRAlgorithm; /* Algoritmo de Page Replacement (substituição de página). */
 
 /* Interno */
 int clock_counter;
@@ -34,10 +38,6 @@ unsigned vir_to_p(unsigned addr, unsigned p_size_kb) {
     assert(p_size_kb > 0);
 
     return addr >> (lg2(p_size_kb) + 10u);
-}
-
-int randrange(int n) {
-    return rand() % n;
 }
 
 void MemoryInit(int p_size_kb, int phys_mem_kb) {
@@ -69,8 +69,13 @@ void MemoryClockInterrupt(void) {
     }
 }
 
-int choose_page_frame(void) {
-    return randrange(num_page_frames);
+int choose_page_frame(PRAlgorithm algo) {
+    int index = -1;
+
+    if (algo == RANDOM)
+        index = rand() % num_page_frames; /* Escolhe aleatóriamente. */
+
+    return index;
 }
 
 void evict_page(int frame_index) {
@@ -93,7 +98,7 @@ void MemoryRead(unsigned addr) {
     if (p_table[index].frame_index == NOT_IN_MEMORY) {
         /* Quando ocorre uma 'page fault', deve-se escolher uma página para
         ser retirada da memória. */
-        int f_index = choose_page_frame();
+        int f_index = choose_page_frame(RANDOM);
         evict_page(f_index);
 
         /* Se a página foi modificada, é necessário rescrever-la no HD,
