@@ -4,11 +4,14 @@
 #define TRUE 1
 #define FALSE 0
 
-#if 0
+#if 1
 #define DEBUG
 #else
 #define DEBUG if(0)
 #endif
+
+/* Imprime o nome do int e o seu valor. */
+#define printvar(name) (printf("%s = %d\n", #name, name))
 
 /* Retorna 2 elevado à n. */
 #define pow2(x) (1u<<(x))

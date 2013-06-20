@@ -80,11 +80,17 @@ void SimulatorRun(Simulator *sim, int options) {
 
     MemoryInit(sim->p_size_kb, sim->phys_mem_kb);
 
+    DEBUG MemoryPrintFrames();
+
     for (i = 0; i < sim->length; i++) {
-        DEBUG if ((i % 1000) == 0) printf("------ %d / %d [%.2f]\n", i, sim->length, (100.0f * i) / sim->length);
+        DEBUG printf("\t\tLinha %d / %d\n\n", i + 1, sim->length;
 
         MemoryAccess(sim->mem_accesses[i].addr, sim->mem_accesses[i].rw);
         MemoryClockInterrupt();
+
+        DEBUG MemoryPrintFrames();
+
+        DEBUG getchar();
     }
 
     MemoryDestroy();

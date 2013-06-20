@@ -72,9 +72,9 @@ void MemoryDestroy(void) {
 void MemoryClockInterrupt(void) {
     int i;
 
-    for (i = 0; i < num_page_frames; i++) {
-        frames[i].referenced =  FALSE;       
-    }
+    // for (i = 0; i < num_page_frames; i++) {
+    //     frames[i].referenced =  FALSE;       
+    // }
 }
 
 int choose_page_frame(PRAlgorithm algo) {
@@ -83,6 +83,8 @@ int choose_page_frame(PRAlgorithm algo) {
     if (algo == RANDOM)
         frame_i = rand() % num_page_frames; /* Escolhe aleatóriamente. */
 
+    DEBUG printf("Escolhendo frame_i: %d\n", frame_i);
+
     return frame_i;
 }
 
@@ -90,24 +92,32 @@ int choose_page_frame(PRAlgorithm algo) {
 void evict_page(int frame_i) {
     assert(0 <= frame_i && frame_i < num_page_frames);
 
+    DEBUG printf("Removendo quadro %d...\n", frame_i);
+
     frames[frame_i].vir_i = NOT_IN_MEMORY;
     frames[frame_i].referenced = FALSE;
-    frames[frame_i].modified = FALSE;
+    // frames[frame_i].modified = FALSE;
 }
 
 /*  Verifica se o quadro de página com índice frame_i foi modificado e 
     simula a escrita ao disco.
     Nesse caso, para simular a escrita, basta incrementar um contador. */
 void check_modified(int frame_i) {
+    DEBUG printf("Quadro de pagina %d foi modificado? ", frame_i);
     if (frames[frame_i].modified) {
+        DEBUG printf("SIM! Incrementando numero de escritas...\n");
         num_writes_to_disk += 1;
+        DEBUG printvar(num_writes_to_disk);
     }
+    DEBUG printf("Nao!\n");
 }
 
 /* Simula o carregamento de um quadro de página na memória física. */
 void load_page(int vir_i, int frame_i, char rw) {
     assert_index(vir_i, num_virtual_pages);
     assert_index(frame_i, num_page_frames);
+
+    DEBUG printf("Carregando quadro %d em vir_i=%d, rw=%c\n", frame_i, vir_i, rw);
 
     frames[frame_i].vir_i = vir_i;
 
@@ -122,8 +132,16 @@ void load_page(int vir_i, int frame_i, char rw) {
 int find_frame(int vir_i) {
     int i;
 
-    for (i = 0; i < num_page_frames; i++)
-        if (frames[i].vir_i == vir_i) return i;
+    DEBUG printf("Procurando pagina com vir_i=%d... ", vir_i);
+
+    for (i = 0; i < num_page_frames; i++) {
+        if (frames[i].vir_i == vir_i) {
+            DEBUG printf("encontrada %d!\n", i);
+            return i;
+        }
+    }
+
+    DEBUG printf("NAO encontrada!\n");
 
     return NOT_IN_MEMORY;
 }
@@ -135,10 +153,16 @@ void MemoryAccess(unsigned addr, char rw) {
     vir_i = addr >> (lg2(page_size) + 10);
     frame_i = find_frame(vir_i);
 
-    DEBUG printf("Acesso %c em %x, vir_i = %d\n", rw, addr, vir_i);
+    DEBUG printf("Acesso: %x %c\n", addr, rw);
+
+    DEBUG printvar(vir_i);
+    DEBUG printvar(frame_i);
+    DEBUG printvar(num_used_page_frames);
 
     /* Page fault? */
     if (frame_i == NOT_IN_MEMORY) {
+        DEBUG printf("Page fault!\n"); 
+
         /* Algoritmo só entra em ação quando a memória física estiver cheia. */
         if (num_used_page_frames < num_page_frames) { 
             load_page(vir_i, num_used_page_frames, rw);
@@ -161,10 +185,14 @@ void MemoryAccess(unsigned addr, char rw) {
             frames[chosen_frame_i].referenced = TRUE;
         }
     } else {
+        DEBUG printf("Page HIT!\n");
+
         frames[frame_i].referenced = TRUE ;
 
-        if (rw == 'W')
+        if (rw == 'W') {
             frames[frame_i].modified = TRUE;
+            DEBUG printf("frames[%d].modified = TRUE\n", frame_i);
+        }
     }
 }
 
@@ -173,4 +201,19 @@ void MemoryStatistics(int* n_writes, int* n_pfaults, int* num_vir_pages, int* nu
     *n_pfaults = num_page_faults;
     *num_vir_pages = num_virtual_pages;
     *num_p_frames = num_page_frames;
+}
+
+void MemoryPrintFrames(void) {
+    int i;
+
+    printf("\n+");
+    for (i = 0; i < 50; i++) printf("-");
+    printf("\n|\tframe_i\tvir_i\tref\tmod\n");
+    for (i = 0; i < num_page_frames; i++) {
+        printf("|\t%d\t%d\t%d\t%d\n", i, frames[i].vir_i, frames[i].referenced, frames[i].modified);
+    } 
+
+    printf("+");
+    for (i = 0; i < 50; i++) printf("-");
+    printf("\n");
 }
