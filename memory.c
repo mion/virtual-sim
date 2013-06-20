@@ -8,15 +8,9 @@
 
 #define NOT_IN_MEMORY -1
 
-typedef struct VirtualPage {
-    int referenced, modified, last_access;
-    int frame_index;
-} VirtualPage;
-
-VirtualPage *p_table; /* Page table */
-
 typedef struct PageFrame {
-    int v_ind; /* Índice na tabela de páginas virtuais (p_table) */
+    int referenced, modified, last_access;
+    int vir_i; /* Índice na tabela de páginas virtuais (p_table) */
 } PageFrame;
 
 PageFrame *frames;
@@ -61,107 +55,122 @@ void MemoryInit(int p_size_kb, int phys_mem_kb) {
     num_page_frames = phys_mem_kb / p_size_kb;
     num_virtual_pages = pow2(32 - (lg2(p_size_kb) + 10));
 
-    p_table = (VirtualPage *) malloc(num_virtual_pages * sizeof(VirtualPage));
-    mcheck(p_table); 
-
     frames = (PageFrame *) malloc(num_page_frames * sizeof(PageFrame));
     mcheck(frames);
 
-    for (i = 0; i < num_virtual_pages; i++) {
-        p_table[i].referenced = p_table[i].modified = FALSE; 
-        p_table[i].last_access = 0;
-        p_table[i].frame_index = NOT_IN_MEMORY;
-    }
-
     for (i = 0; i < num_page_frames; i++) {
-        frames[i].v_ind = NOT_IN_MEMORY;
+        frames[i].referenced = FALSE;
+        frames[i].last_access = 0;
+        frames[i].vir_i = NOT_IN_MEMORY;
     }
 }
 
 void MemoryDestroy(void) {
-    free(p_table); 
     free(frames);
 }
 
 void MemoryClockInterrupt(void) {
-    // int i;
+    int i;
 
-    // for (i = 0; i < num_virtual_pages; i++) {
-    //     p_table[i].referenced =  FALSE;       
-    // }
-}
-
-int choose_page_frame(PRAlgorithm algo) {
-    int index = -1;
-
-    if (algo == RANDOM)
-        index = rand() % num_page_frames; /* Escolhe aleatóriamente. */
-
-    return index;
-}
-
-int evict_page(int frame_index) {
-    int i = frames[frame_index].v_ind;
-
-    if (i != NOT_IN_MEMORY) {
-        p_table[i].frame_index = NOT_IN_MEMORY;
-        frames[frame_index].v_ind = NOT_IN_MEMORY;
-        return i;
-    } else {
-        return -1;
+    for (i = 0; i < num_page_frames; i++) {
+        frames[i].referenced =  FALSE;       
     }
 }
 
-void check_modified(int p_index) {
-    if (p_table[p_index].modified) {
+int choose_page_frame(PRAlgorithm algo) {
+    int frame_i = -1;
+
+    if (algo == RANDOM)
+        frame_i = rand() % num_page_frames; /* Escolhe aleatóriamente. */
+
+    return frame_i;
+}
+
+/* Simula a retirada de um quadro de página da memória física. */
+void evict_page(int frame_i) {
+    assert(0 <= frame_i && frame_i < num_page_frames);
+
+    frames[frame_i].vir_i = NOT_IN_MEMORY;
+    frames[frame_i].referenced = FALSE;
+    frames[frame_i].modified = FALSE;
+}
+
+/*  Verifica se o quadro de página com índice frame_i foi modificado e 
+    simula a escrita ao disco.
+    Nesse caso, para simular a escrita, basta incrementar um contador. */
+void check_modified(int frame_i) {
+    if (frames[frame_i].modified) {
         num_writes_to_disk += 1;
     }
 }
 
-void load_page(int p_index, int f_index, char rw) {
-    p_table[p_index].frame_index = f_index;
-    frames[f_index].v_ind = p_index;
+/* Simula o carregamento de um quadro de página na memória física. */
+void load_page(int vir_i, int frame_i, char rw) {
+    assert_index(vir_i, num_virtual_pages);
+    assert_index(frame_i, num_page_frames);
+
+    frames[frame_i].vir_i = vir_i;
 
     if (rw == 'W')
-        p_table[p_index].modified = TRUE;
+        frames[frame_i].modified = TRUE;
 }
 
+/* Procura o quadro de página com o índice virtual vir_i.
+   Caso encontrado, retorna o índice da página no vetor frames.
+   Obs: Isto só é necessário na simulação, na prática teríamos um outro vetor 
+   representando a tabela de páginas virtuais. */
+int find_frame(int vir_i) {
+    int i;
+
+    for (i = 0; i < num_page_frames; i++)
+        if (frames[i].vir_i == vir_i) return i;
+
+    return NOT_IN_MEMORY;
+}
+
+/* Simula um acesso a memória, tanto de leitura como escrita (indicado por rw). */
 void MemoryAccess(unsigned addr, char rw) {
-    int i = addr >> (lg2(page_size) + 10);
+    int vir_i, frame_i;
 
-    p_table[i].referenced = TRUE;
+    vir_i = addr >> (lg2(page_size) + 10);
+    frame_i = find_frame(vir_i);
 
-    DEBUG printf("Acesso %c em %x, i = %d\n", rw, addr, i);
+    DEBUG printf("Acesso %c em %x, vir_i = %d\n", rw, addr, vir_i);
 
     /* Page fault? */
-    if (p_table[i].frame_index == NOT_IN_MEMORY) {
+    if (frame_i == NOT_IN_MEMORY) {
         /* Algoritmo só entra em ação quando a memória física estiver cheia. */
         if (num_used_page_frames < num_page_frames) { 
-            load_page(i, num_used_page_frames, rw);
+            load_page(vir_i, num_used_page_frames, rw);
             num_used_page_frames += 1;
         } else {
-            int f_index, p_removed_index;
+            int chosen_frame_i; 
 
             num_page_faults += 1;
 
             /* Quando ocorre uma 'page fault', deve-se escolher uma página... */
-            f_index = choose_page_frame(RANDOM);
+            chosen_frame_i = choose_page_frame(RANDOM);
             /* ...para ser retirada da memória. */
-            p_removed_index = evict_page(f_index);
-
-            assert(p_removed_index != -1);
-
+            evict_page(chosen_frame_i);
             /* Se a página foi modificada, é necessário rescrever-la no HD,
             para atualizar a cópia que estava no disco. */
-            check_modified(p_removed_index);
-
+            check_modified(chosen_frame_i);
             /* Coloca a nova página na memória. */
-            load_page(i, f_index, rw);
+            load_page(vir_i, chosen_frame_i, rw);
+
+            frames[chosen_frame_i].referenced = TRUE;
         }
+    } else {
+        frames[frame_i].referenced = TRUE ;
+
+        if (rw == 'W')
+            frames[frame_i].modified = TRUE;
     }
 }
 
-void MemoryStatistics(int* n_writes, int* n_pfaults) {
+void MemoryStatistics(int* n_writes, int* n_pfaults, int* num_vir_pages, int* num_p_frames) {
     *n_writes = num_writes_to_disk;
     *n_pfaults = num_page_faults;
+    *num_vir_pages = num_virtual_pages;
+    *num_p_frames = num_page_frames;
 }

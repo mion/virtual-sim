@@ -91,7 +91,11 @@ void SimulatorRun(Simulator *sim, int options) {
 }
 
 void SimulatorPrintResults(Simulator *sim) {
-    int n_writes, n_pfaults;
-    MemoryStatistics(&n_writes, &n_pfaults);
+    int n_writes, n_pfaults, n_vpages, n_pframes;
+
+    MemoryStatistics(&n_writes, &n_pfaults, &n_vpages, &n_pframes);
+
+    printf("Numero de paginas virtuais: %d\nNumero de quadros de paginas: %d\n", n_vpages, n_pframes);
     printf("Paginas lidas: %d\nPaginas escritas: %d\n", n_pfaults, n_writes);
 }
+

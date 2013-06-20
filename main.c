@@ -29,7 +29,7 @@ void parse_args(int argc,
     }
 }
 
-void init(char *filename_in, Simulator *sim) {
+void load(char *filename_in, Simulator *sim) {
     FILE *fp = (FILE *) fopen(filename_in, "r");
     if (!fp) {
         printf("ERRO: nao foi possivel abrir o arquivo '%s'.\n", filename_in);
@@ -48,8 +48,8 @@ int main(int argc, char const *argv[]) {
 
     parse_args(argc, argv, alg, filename_in, &p_size_kb, &phys_mem_kb, &debug_mode);
 
-    /* Inicializa simulador com o arquivo de entrada. */
-    init(filename_in, &sim);
+    /* Carrega o simulador com o arquivo de entrada. */
+    load(filename_in, &sim);
 
     sim.p_size_kb = p_size_kb;
     sim.phys_mem_kb = phys_mem_kb;

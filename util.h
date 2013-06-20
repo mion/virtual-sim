@@ -19,4 +19,7 @@ unsigned lg2(unsigned x);
 /* Verifica se houve erro de alocação, chamado depois de um malloc. */
 void mcheck(void *ptr);
 
+void assert_bounds(int i, int lower, int upper);
+void assert_index(int i, int size);
+
 #endif
