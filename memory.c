@@ -60,6 +60,7 @@ void MemoryInit(int p_size_kb, int phys_mem_kb) {
 
     for (i = 0; i < num_page_frames; i++) {
         frames[i].referenced = FALSE;
+        frames[i].modified = FALSE;
         frames[i].last_access = 0;
         frames[i].vir_i = NOT_IN_MEMORY;
     }
@@ -70,7 +71,7 @@ void MemoryDestroy(void) {
 }
 
 void MemoryClockInterrupt(void) {
-    int i;
+    // int i;
 
     // for (i = 0; i < num_page_frames; i++) {
     //     frames[i].referenced =  FALSE;       
@@ -121,8 +122,10 @@ void load_page(int vir_i, int frame_i, char rw) {
 
     frames[frame_i].vir_i = vir_i;
 
-    if (rw == 'W')
+    frames[frame_i].referenced = TRUE;
+    if (rw == 'W') {
         frames[frame_i].modified = TRUE;
+    }
 }
 
 /* Procura o quadro de página com o índice virtual vir_i.

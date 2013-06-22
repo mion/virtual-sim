@@ -83,7 +83,7 @@ void SimulatorRun(Simulator *sim, int options) {
     DEBUG MemoryPrintFrames();
 
     for (i = 0; i < sim->length; i++) {
-        DEBUG printf("\t\tLinha %d / %d\n\n", i + 1, sim->length;
+        DEBUG printf("\t\tLinha %d / %d\n\n", i + 1, sim->length);
 
         MemoryAccess(sim->mem_accesses[i].addr, sim->mem_accesses[i].rw);
         MemoryClockInterrupt();
