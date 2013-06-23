@@ -21,7 +21,7 @@ typedef enum {
 } PRAlgorithm; /* Algoritmo de Page Replacement (substituição de página). */
 
 /* Interno */
-int clock_counter;
+int time_counter;
 int num_virtual_pages;
 int page_size;
 int physical_memory_size;
@@ -46,7 +46,7 @@ void MemoryInit(int p_size_kb, int phys_mem_kb) {
 
     num_writes_to_disk = 0;
     num_page_faults = 0 ;
-    clock_counter = 0;
+    time_counter = 0;
     /* Algoritmo só entra em ação depois de todas estarem carregadas. */
     num_used_page_frames = 0;
 
@@ -71,11 +71,15 @@ void MemoryDestroy(void) {
 }
 
 void MemoryClockInterrupt(void) {
-    // int i;
+    int i;
 
-    // for (i = 0; i < num_page_frames; i++) {
-    //     frames[i].referenced =  FALSE;       
-    // }
+    time_counter += 1;
+
+    if (time_counter % 2 == 0) {
+        for (i = 0; i < num_page_frames; i++) {
+            frames[i].referenced =  FALSE;       
+        }
+    }
 }
 
 int choose_page_frame(PRAlgorithm algo) {
