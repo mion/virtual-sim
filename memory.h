@@ -12,10 +12,16 @@ typedef struct Statistics
 typedef struct Memory Memory;
 
 Memory* MemoryInit(char *algo, int p_size_kb, int phys_mem_kb);
+
 void MemoryDestroy(Memory *mem);
+
 void MemoryClockInterrupt(Memory *mem);
+
+/* Simula um acesso a memória, tanto de leitura como escrita (indicado por rw). */
 void MemoryAccess(Memory *mem, unsigned addr, char rw);
+
 void MemoryPrintFrames(Memory *mem);
+
 Statistics MemoryStatistics(Memory *mem);
 
 #endif

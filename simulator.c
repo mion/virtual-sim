@@ -22,7 +22,6 @@ struct Simulator {
 
 /********** FUNÇÕES INTERNAS/AUXILIARES **********/
 
-
 /********** FUNÇÕES PÚBLICAS **********/
 
 Options OptionsFromArgs(int argc, char const *argv[]) {    
@@ -64,7 +63,7 @@ Simulator *SimulatorInit(Options opts) {
     mcheck(sim);
 
     fp = (FILE *) fopen(opts.filename, "r");
-    fcheck(fp);
+    fcheck(fp, opts.filename);
     while(fscanf(fp, "%x %c ", &addr, &rw) == 2) {
         if (i >= MEM_ACCESS_MAX) {
             printf("ERROR: ultrapassado numero maximo de linhas no arquivo de log.\n");
@@ -101,7 +100,7 @@ void SimulatorRun(Simulator *sim) {
     }
 }
 
-void SimulatorPrintResults(Simulator *sim) {
+void SimulatorPrintResult(Simulator *sim) {
     Statistics stats = MemoryStatistics(sim->mem);
 
     printf("Escritas ao disco: %d\nPage faults: %d\n", 

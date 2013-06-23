@@ -1,7 +1,6 @@
 #include "util.h"
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <assert.h>
 
 unsigned lg2(unsigned x) {

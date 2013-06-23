@@ -3,10 +3,13 @@
 #include "util.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include <assert.h>
 
 #define NOT_IN_MEMORY -1
+
+/********** ESTRUTURAS DE DADOS **********/
 
 /* Algoritmo de Page Replacement (substituição de página). */
 typedef enum {
@@ -16,23 +19,17 @@ typedef enum {
     SEC     /* Second Chance */
 } PRAlgorithm; 
 
+/* Quadro de página
+OBS: Na prática, o quadro de página obviamente não 'sabe' qual
+o seu índice na tabela de páginas (vir_i).
+Implementamos desta forma para melhorar a performance, para
+não ser necessário guardar um vetor de 1M de páginas virtuais. */
 typedef struct PageFrame {
-    int referenced, modified, last_access;
+    int referenced, 
+        modified, 
+        last_access;
     int vir_i; /* Índice na tabela de páginas virtuais (p_table) */
 } PageFrame;
-
-// /* Interno */
-// int time_counter;
-// int num_virtual_pages;
-// int page_size;
-// int physical_memory_size;
-// int num_page_frames;
-// int num_used_page_frames;
-
-// /* Estatísticas */
-// int num_writes_to_disk;
-// int num_page_faults;
-
 
 struct Memory {
     PRAlgorithm algo;
@@ -48,6 +45,8 @@ struct Memory {
     Statistics stats; /* Estatísticas */
 };
 
+/********** FUNÇÕES INTERNAS/AUXILIARES **********/
+
 /* Retorna o índice de uma página baseado em um endereço lógico. */
 unsigned vir_to_p(unsigned addr, unsigned p_size_kb) {
     assert(p_size_kb > 0);
@@ -55,70 +54,24 @@ unsigned vir_to_p(unsigned addr, unsigned p_size_kb) {
     return addr >> (lg2(p_size_kb) + 10u);
 }
 
-Algorithm AlgorithmFromString(char *str) {
+PRAlgorithm AlgorithmFromString(char *str) {
     assert(str);
 
     if (strcmp(str, "NRU") == 0) {
-        return Algorithm.NRU;
+        return NRU;
     } else if (strcmp(str, "LRU") == 0) {
-        return Algorithm.LRU;
+        return LRU;
     } else if (strcmp(str, "SEG") == 0) { /* Cuidado: input é em português. */
-        return Algorithm.SEC;
+        return SEC;
     } else if (strcmp(str, "RND") == 0) {
-        return Algorithm.RANDOM;
+        return RANDOM;
     } else {
         printf("ERRO: algoritmo '%s' de substituicao de paginas invalido.\n", str);
         exit(EXIT_FAILURE);
     }
 }
 
-Memory *MemoryInit(char *algo, int p_size_kb, int phys_mem_kb) {
-    int i;
-    Memory *mem = (Memory *) malloc(sizeof(Memory));
-    mcheck(mem);
-
-    srand(time(NULL));
-
-    mem->algo = AlgorithmFromString(algo);
-
-    mem->stats.num_writes_to_disk = 0;
-    mem->stats.num_page_faults = 0 ;
-    mem->time_counter = 0;
-    mem->num_used_page_frames = 0;
-
-    mem->page_size = p_size_kb;
-    mem->physical_memory_size = phys_mem_kb;
-    mem->num_page_frames = phys_mem_kb / p_size_kb;
-    mem->num_virtual_pages = pow2(32 - (lg2(p_size_kb) + 10));
-
-    mem->frames = (PageFrame *) malloc(mem->num_page_frames * sizeof(PageFrame));
-    mcheck(mem->frames);
-
-    for (i = 0; i < mem->num_page_frames; i++) {
-        mem->frames[i].referenced = FALSE;
-        mem->frames[i].modified = FALSE;
-        mem->frames[i].last_access = 0;
-        mem->frames[i].vir_i = NOT_IN_MEMORY;
-    }
-}
-
-void MemoryDestroy(Memory *mem) {
-    free(mem->frames);
-    free(mem);
-}
-
-void MemoryClockInterrupt(Memory *mem) {
-    int i;
-
-    mem->time_counter += 1;
-
-    if (mem->time_counter % 2 == 0) {
-        for (i = 0; i < mem->num_page_frames; i++) {
-            mem->frames[i].referenced =  FALSE;       
-        }
-    }
-}
-
+/* Escolhe uma página para ser retirada da memória. */
 int choose_page_frame(Memory *mem, PRAlgorithm algo) {
     int frame_i = -1;
 
@@ -130,7 +83,7 @@ int choose_page_frame(Memory *mem, PRAlgorithm algo) {
     return frame_i;
 }
 
-/* Simula a retirada de um quadro de página da memória física. */
+/* Retira um quadro de página da memória física. */
 void evict_page(Memory *mem, int frame_i) {
     assert(0 <= frame_i && frame_i < mem->num_page_frames);
 
@@ -145,11 +98,13 @@ void evict_page(Memory *mem, int frame_i) {
     simula a escrita ao disco.
     Nesse caso, para simular a escrita, basta incrementar um contador. */
 void check_modified(Memory *mem, int frame_i) {
-    DEBUG printf("Quadro de pagina %d foi modificado? ", frame_i);
+    DEBUG printf("Quadro de pagina %d foi modificado? ", frame_i); 
     if (mem->frames[frame_i].modified) {
         DEBUG printf("SIM! Incrementando numero de escritas...\n");
-        mem->stats.num_writes_to_disk += 1;
-        DEBUG printvar(mem->stats.num_writes_to_disk);
+
+        mem->stats.writes_to_disk += 1;
+
+        DEBUG printvar(mem->stats.writes_to_disk);
     }
     DEBUG printf("Nao!\n");
 }
@@ -190,12 +145,65 @@ int find_frame(Memory *mem, int vir_i) {
     return NOT_IN_MEMORY;
 }
 
-/* Simula um acesso a memória, tanto de leitura como escrita (indicado por rw). */
+/********** FUNÇÕES PÚBLICAS **********/
+
+Memory *MemoryInit(char *algo, int p_size_kb, int phys_mem_kb) {
+    int i;
+    Memory *mem = (Memory *) malloc(sizeof(Memory));
+    mcheck(mem);
+
+    srand(time(NULL));
+
+    mem->algo = AlgorithmFromString(algo);
+
+    mem->stats.writes_to_disk = 0;
+    mem->stats.page_faults = 0 ;
+
+    mem->time_counter = 0;
+    mem->num_used_page_frames = 0;
+
+    mem->page_size = p_size_kb;
+    mem->physical_memory_size = phys_mem_kb;
+    mem->num_page_frames = phys_mem_kb / p_size_kb;
+    mem->num_virtual_pages = pow2(32 - (lg2(p_size_kb) + 10));
+
+    mem->frames = (PageFrame *) malloc(mem->num_page_frames * sizeof(PageFrame));
+    mcheck(mem->frames);
+
+    for (i = 0; i < mem->num_page_frames; i++) {
+        mem->frames[i].referenced = FALSE;
+        mem->frames[i].modified = FALSE;
+        mem->frames[i].last_access = 0;
+        mem->frames[i].vir_i = NOT_IN_MEMORY;
+    }
+
+    return mem;
+}
+
+void MemoryDestroy(Memory *mem) {
+    free(mem->frames);
+    free(mem);
+}
+
+void MemoryClockInterrupt(Memory *mem) {
+    int i;
+
+    mem->time_counter += 1;
+
+    if (mem->time_counter % 2 == 0) {
+        DEBUG printf("Limpando bits R\n");
+
+        for (i = 0; i < mem->num_page_frames; i++) {
+            mem->frames[i].referenced =  FALSE;       
+        }
+    }
+}
+
 void MemoryAccess(Memory *mem, unsigned addr, char rw) {
     int vir_i, frame_i;
 
     vir_i = addr >> (lg2(mem->page_size) + 10);
-    frame_i = find_frame(vir_i);
+    frame_i = find_frame(mem, vir_i);
 
     DEBUG printf("Acesso: %x %c\n", addr, rw);
 
@@ -214,10 +222,10 @@ void MemoryAccess(Memory *mem, unsigned addr, char rw) {
         } else {
             int chosen_frame_i; 
 
-            mem->stats.num_page_faults += 1;
+            mem->stats.page_faults += 1;
 
             /* Quando ocorre uma 'page fault', deve-se escolher uma página... */
-            chosen_frame_i = choose_page_frame(RANDOM);
+            chosen_frame_i = choose_page_frame(mem, RANDOM);
             /* ...para ser retirada da memória. */
             evict_page(mem, chosen_frame_i);
             /* Se a página foi modificada, é necessário rescrever-la no HD,
@@ -240,9 +248,6 @@ void MemoryAccess(Memory *mem, unsigned addr, char rw) {
     }
 }
 
-void MemoryPrintStatistics(Memory *mem) {
-}
-
 void MemoryPrintFrames(Memory *mem) {
     int i;
 
@@ -258,4 +263,8 @@ void MemoryPrintFrames(Memory *mem) {
     printf("+");
     for (i = 0; i < 50; i++) printf("-");
     printf("\n");
+}
+
+Statistics MemoryStatistics(Memory *mem) {
+    return mem->stats;
 }
