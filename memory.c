@@ -8,17 +8,18 @@
 
 #define NOT_IN_MEMORY -1
 
+/* Algoritmo de Page Replacement (substituição de página). */
+typedef enum {
+    RANDOM, /* Escolhe as páginas aleatóriamente. */
+    NRU,    /* Non-Recently Used */
+    LRU,    /* Least Recently Used */
+    SEC     /* Second Chance */
+} PRAlgorithm; 
+
 typedef struct PageFrame {
     int referenced, modified, last_access;
     int vir_i; /* Índice na tabela de páginas virtuais (p_table) */
 } PageFrame;
-
-// PageFrame *frames;
-
-typedef enum {
-    RANDOM,
-    NRU 
-} PRAlgorithm; /* Algoritmo de Page Replacement (substituição de página). */
 
 // /* Interno */
 // int time_counter;
@@ -32,13 +33,9 @@ typedef enum {
 // int num_writes_to_disk;
 // int num_page_faults;
 
-struct Statistics
-{
-    int writes_to_disk, /* Número de escritas ao disco (páginas escritas) */
-        page_faults; /* Número de page faults (páginas lidas) */
-};
 
 struct Memory {
+    PRAlgorithm algo;
     PageFrame *frames;          /* Quadro de páginas */
     int time_counter,           /* Contador de tempo (atualizado a cada clock interrupt) */
         num_virtual_pages,      /* Número de páginas virtuais */
@@ -58,12 +55,31 @@ unsigned vir_to_p(unsigned addr, unsigned p_size_kb) {
     return addr >> (lg2(p_size_kb) + 10u);
 }
 
-Memory *MemoryInit(int p_size_kb, int phys_mem_kb) {
+Algorithm AlgorithmFromString(char *str) {
+    assert(str);
+
+    if (strcmp(str, "NRU") == 0) {
+        return Algorithm.NRU;
+    } else if (strcmp(str, "LRU") == 0) {
+        return Algorithm.LRU;
+    } else if (strcmp(str, "SEG") == 0) { /* Cuidado: input é em português. */
+        return Algorithm.SEC;
+    } else if (strcmp(str, "RND") == 0) {
+        return Algorithm.RANDOM;
+    } else {
+        printf("ERRO: algoritmo '%s' de substituicao de paginas invalido.\n", str);
+        exit(EXIT_FAILURE);
+    }
+}
+
+Memory *MemoryInit(char *algo, int p_size_kb, int phys_mem_kb) {
     int i;
     Memory *mem = (Memory *) malloc(sizeof(Memory));
     mcheck(mem);
 
     srand(time(NULL));
+
+    mem->algo = AlgorithmFromString(algo);
 
     mem->stats.num_writes_to_disk = 0;
     mem->stats.num_page_faults = 0 ;

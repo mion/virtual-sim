@@ -34,3 +34,7 @@ void assert_bounds(int i, int lower, int upper) {
 void assert_index(int i, int size) {
     assert_bounds(i, 0, size);
 }
+
+void print_header(const char *str) {
+    printf("---[ %s ]---\n", str);
+}

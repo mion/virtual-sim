@@ -16,29 +16,12 @@ typedef struct MemAccess {
 
 struct Simulator {
     MemAccess mem_accesses[MEM_ACCESS_MAX];
-    char alg[31];
-    int length, p_size_kb, phys_mem_kb, debug_mode;
+    int num_mem_accesses;
     Memory *mem;
 };
 
 /********** FUNÇÕES INTERNAS/AUXILIARES **********/
 
-Algorithm AlgorithmFromString(char *str) {
-    assert(str);
-
-    if (strcmp(str, "NRU") == 0) {
-        return Algorithm.NRU;
-    } else if (strcmp(str, "LRU") == 0) {
-        return Algorithm.LRU;
-    } else if (strcmp(str, "SEG") == 0) { /* Cuidado: input é em português. */
-        return Algorithm.SEC;
-    } else if (strcmp(str, "RND") == 0) {
-        return Algorithm.RANDOM;
-    } else {
-        printf("ERRO: algoritmo '%s' de substituicao de paginas invalido.\n", str);
-        exit(EXIT_FAILURE);
-    }
-}
 
 /********** FUNÇÕES PÚBLICAS **********/
 
@@ -46,7 +29,7 @@ Options OptionsFromArgs(int argc, char const *argv[]) {
     if (argc == 5) {
         Options opts;
 
-        opts.algo = AlgorithmFromString(argv[1]);
+        strcpy(opts.algo, argv[1]);
         strcpy(opts.filename, argv[2]);
         opts.p_size_kb = atoi(argv[3]);
         opts.phys_mem_kb = atoi(argv[4]);
@@ -59,6 +42,15 @@ Options OptionsFromArgs(int argc, char const *argv[]) {
         printf("ERRO: numero incorreto de argumentos (%d). Esperava 5 (ou 6).\n", argc);
         exit(EXIT_FAILURE); 
     }
+}
+
+void OptionsPrint(Options opts) {    
+    print_header("OPCOES DE SIMULACAO");
+    printf("\tArquivo de entrada: %s\n", opts.filename);
+    printf("\tTamanho da memoria: %d\n", opts.phys_mem_kb);
+    printf("\tTamanho das paginas: %d\n", opts.p_size_kb);
+    printf("\tAlg de substituicao: %s\n", opts.algo);
+    printf("\tModo de depuracao: %d\n", opts.debug_mode);
 }
 
 Simulator *SimulatorInit(Options opts) {
@@ -85,35 +77,39 @@ Simulator *SimulatorInit(Options opts) {
     }
     fclose(fp);
 
-    sim->length = i;
+    sim->num_mem_accesses = i;
+
+    sim->mem = MemoryInit(opts.algo, opts.p_size_kb, opts.phys_mem_kb);
 
     return sim;
 }
 
-void SimulatorRun(Simulator *sim, int options) {
+void SimulatorRun(Simulator *sim) {
     int i;
-    Memory *mem  = MemoryInit(sim->p_size_kb, sim->phys_mem_kb);
 
-    DEBUG MemoryPrintFrames(mem);
+    DEBUG MemoryPrintFrames(sim->mem);
 
-    for (i = 0; i < sim->length; i++) {
-        DEBUG printf("\t\tLinha %d / %d\n\n", i + 1, sim->length);
+    for (i = 0; i < sim->num_mem_accesses; i++) {
+        DEBUG printf("\t\tLinha %d / %d\n\n", i + 1, sim->num_mem_accesses);
 
-        MemoryAccess(mem, sim->mem_accesses[i].addr, sim->mem_accesses[i].rw);
-        MemoryClockInterrupt(mem);
+        MemoryAccess(sim->mem, sim->mem_accesses[i].addr, sim->mem_accesses[i].rw);
+        MemoryClockInterrupt(sim->mem);
 
-        DEBUG MemoryPrintFrames(mem);
+        DEBUG MemoryPrintFrames(sim->mem);
 
         DEBUG getchar();
     }
 }
 
 void SimulatorPrintResults(Simulator *sim) {
+    Statistics stats = MemoryStatistics(sim->mem);
+
     printf("Escritas ao disco: %d\nPage faults: %d\n", 
-        sim->mem->stats.writes_to_disk, 
-        sim->mem->stats.page_faults);
+        stats.writes_to_disk, 
+        stats.page_faults);
 }
 
 void SimulatorDestroy(Simulator *sim) {
     MemoryDestroy(sim->mem);
+    free(sim);
 }

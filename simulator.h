@@ -6,16 +6,9 @@
 
 typedef struct Simulator Simulator;
 
-typedef enum {
-    RANDOM, /* Escolhe as páginas aleatóriamente. */
-    NRU,    /* Non-Recently Used */
-    LRU,    /* Least Recently Used */
-    SEC     /* Second Chance */
-} Algorithm; /* Algoritmo de Page Replacement (substituição de página). */
-
 typedef struct Options {
     char filename[ARGV_MAX];
-    Algorithm algo;
+    char algo[ARGV_MAX];
     int p_size_kb, 
         phys_mem_kb;
     int debug_mode;
@@ -24,13 +17,12 @@ typedef struct Options {
 /* Faz um parsing dos argumentos passados na linha de comando
 e returna uma struct que representa as opções. */
 Options OptionsFromArgs(int argc, char const *argv[]);
+/* Imprime as opções, apenas para conferir. */
+void OptionsPrint(Options opts);
 
 /* Inicializa o simulador com as opções escolhidas, carregando
 os acessos de um arquivo de entrada. */
 Simulator *SimulatorInit(Options opts);
-
-/* Imprime as opções, apenas para conferir. */
-void SimulatorPrintOptions(Simulator *sim);
 
 /* Executa a simuação. */
 void SimulatorRun(Simulator *sim);

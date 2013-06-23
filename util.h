@@ -28,4 +28,6 @@ void fcheck(FILE *fp, char *filename);
 void assert_bounds(int i, int lower, int upper);
 void assert_index(int i, int size);
 
+void print_header(const char *str);
+
 #endif
