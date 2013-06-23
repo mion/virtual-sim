@@ -4,7 +4,7 @@
 #define TRUE 1
 #define FALSE 0
 
-#if 1
+#if 0
 #define DEBUG
 #else
 #define DEBUG if(0)
@@ -21,6 +21,9 @@ unsigned lg2(unsigned x);
 
 /* Verifica se houve erro de alocação, chamado depois de um malloc. */
 void mcheck(void *ptr);
+
+/* Verifica se foi possível abrir um arquivo. */
+void fcheck(FILE *fp, char *filename);
 
 void assert_bounds(int i, int lower, int upper);
 void assert_index(int i, int size);

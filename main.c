@@ -40,20 +40,16 @@ void load(char *filename_in, Simulator *sim) {
 }
 
 int main(int argc, char const *argv[]) {
-    char alg[ARGV_MAX], filename_in[ARGV_MAX];
-    int p_size_kb, phys_mem_kb, debug_mode = 0;
-    Simulator sim;
+    Options opts;
+    Simulator *sim; 
 
-    printf("sim-virtual v0.1.0\n");
+    opts = OptionsFromArgs(argc, argv);
 
-    parse_args(argc, argv, alg, filename_in, &p_size_kb, &phys_mem_kb, &debug_mode);
+    sim = SimulatorInit(sim, opts);
 
-    /* Carrega o simulador com o arquivo de entrada. */
-    load(filename_in, &sim);
-
-    sim.p_size_kb = p_size_kb;
-    sim.phys_mem_kb = phys_mem_kb;
-    sim.debug_mode = debug_mode;
+    SimulatorPrintOptions(sim);
+    SimulatorRun(sim);
+    SimulatorPrintResult(sim);
 
     printf("--- CONFIGURACAO DE ENTRADA ---\n");
     printf("\tArquivo de entrada: %s\n", filename_in);
@@ -63,6 +59,7 @@ int main(int argc, char const *argv[]) {
     printf("\tNumero total de acessos a memoria: %d\n", SimulatorLength(&sim));
     printf("\n[!] Executando simulacao, por favor aguarde...\n\n");
     printf("--- RESULTADO DA SIMULACAO ---\n");
+
     SimulatorRun(&sim, 0);
     SimulatorPrintResults(&sim);
 

@@ -16,7 +16,14 @@ unsigned lg2(unsigned x) {
 void mcheck(void *ptr) {
     if (!ptr) {
         printf("ERRO: falha ao alocar memoria.\n");
-        exit(1);
+        exit(EXIT_FAILURE);
+    }
+}
+
+void fcheck(FILE *fp, char *filename) {
+    if (!fp) {
+        printf("ERRO: nao foi possivel abrir o arquivo '%s'.\n", filename);
+        exit(EXIT_FAILURE);
     }
 }
 

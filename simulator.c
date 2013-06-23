@@ -4,7 +4,54 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <assert.h>
+
+typedef struct MemAccess {
+    char rw;
+    unsigned addr;
+} MemAccess;
+
+struct Simulator {
+    MemAccess mem_accesses[MEM_ACCESS_MAX];
+    char alg[31];
+    int length, p_size_kb, phys_mem_kb, debug_mode;
+    Memory *mem;
+};
+
+Algorithm AlgorithmFromString(char *str) {
+    if (strcmp(str, "NRU") == 0) {
+        return Algorithm.NRU;
+    } else if (strcmp(str, "LRU") == 0) {
+        return Algorithm.LRU;
+    } else if (strcmp(str, "SEG") == 0) { /* Cuidado: input é em português. */
+        return Algorithm.SEC;
+    } else if (strcmp(str, "RND") == 0) {
+        return Algorithm.RANDOM;
+    } else {
+        printf("ERRO: algoritmo '%s' de substituicao de paginas invalido.\n", str);
+        exit(EXIT_FAILURE);
+    }
+}
+
+Options OptionsFromArgs(int argc, char const *argv[]) {    
+    if (argc == 5) {
+        Options opts;
+
+        opts.algo = AlgorithmFromString(argv[1]);
+        strcpy(opts.filename, argv[2]);
+        opts.p_size_kb = atoi(argv[3]);
+        opts.phys_mem_kb = atoi(argv[4]);
+
+        if (argc == 6) opts.debug_mode = atoi(argv[5]);
+
+        return opts;
+    }
+    else {
+        printf("ERRO: numero incorreto de argumentos (%d). Esperava 5 (ou 6).\n", argc);
+        exit(EXIT_FAILURE); 
+    }
+}
 
 void MemAccessPrint(MemAccess mem_access) {
     printf("0x%08x - %c\n", mem_access.addr, mem_access.rw);
@@ -20,13 +67,16 @@ void SimulatorPrint(Simulator *sim) {
     }
 }
 
-void SimulatorLoad(FILE *fp, Simulator *sim) {
+Simulator *SimulatorInit(FILE *fp) {
+    Simulator *sim;
     int i = 0;
     unsigned addr;
     char rw;
 
     assert(fp);
-    assert(sim);
+
+    sim = (Simulator *) malloc(sizeof(Simulator));
+    mcheck(sim);
 
     while(fscanf(fp, "%x %c ", &addr, &rw) == 2) {
         if (i >= MEM_ACCESS_MAX) {
@@ -41,7 +91,7 @@ void SimulatorLoad(FILE *fp, Simulator *sim) {
 
     sim->length = i;
 
-    return;
+    return sim;
 }
 
 int SimulatorLength(Simulator *sim) {
@@ -77,31 +127,28 @@ implement, and gives a performance that, while certainly not optimal, may be ade
 
 void SimulatorRun(Simulator *sim, int options) {
     int i;
+    Memory *mem  = MemoryInit(sim->p_size_kb, sim->phys_mem_kb);
 
-    MemoryInit(sim->p_size_kb, sim->phys_mem_kb);
-
-    DEBUG MemoryPrintFrames();
+    DEBUG MemoryPrintFrames(mem);
 
     for (i = 0; i < sim->length; i++) {
         DEBUG printf("\t\tLinha %d / %d\n\n", i + 1, sim->length);
 
-        MemoryAccess(sim->mem_accesses[i].addr, sim->mem_accesses[i].rw);
-        MemoryClockInterrupt();
+        MemoryAccess(mem, sim->mem_accesses[i].addr, sim->mem_accesses[i].rw);
+        MemoryClockInterrupt(mem);
 
-        DEBUG MemoryPrintFrames();
+        DEBUG MemoryPrintFrames(mem);
 
         DEBUG getchar();
     }
-
-    MemoryDestroy();
 }
 
 void SimulatorPrintResults(Simulator *sim) {
-    int n_writes, n_pfaults, n_vpages, n_pframes;
-
-    MemoryStatistics(&n_writes, &n_pfaults, &n_vpages, &n_pframes);
-
-    printf("Numero de paginas virtuais: %d\nNumero de quadros de paginas: %d\n", n_vpages, n_pframes);
-    printf("Paginas lidas: %d\nPaginas escritas: %d\n", n_pfaults, n_writes);
+    printf("Escritas ao disco: %d\nPage faults: %d\n", 
+        sim->mem->stats.writes_to_disk, 
+        sim->mem->stats.page_faults);
 }
 
+void SimulatorDestroy(Simulator *sim) {
+    MemoryDestroy(sim->mem);
+}
