@@ -7,6 +7,8 @@
 #include <string.h>
 #include <assert.h>
 
+/********** ESTRUTURAS DE DADOS **********/
+
 typedef struct MemAccess {
     char rw;
     unsigned addr;
@@ -19,7 +21,11 @@ struct Simulator {
     Memory *mem;
 };
 
+/********** FUNÇÕES INTERNAS/AUXILIARES **********/
+
 Algorithm AlgorithmFromString(char *str) {
+    assert(str);
+
     if (strcmp(str, "NRU") == 0) {
         return Algorithm.NRU;
     } else if (strcmp(str, "LRU") == 0) {
@@ -34,6 +40,8 @@ Algorithm AlgorithmFromString(char *str) {
     }
 }
 
+/********** FUNÇÕES PÚBLICAS **********/
+
 Options OptionsFromArgs(int argc, char const *argv[]) {    
     if (argc == 5) {
         Options opts;
@@ -44,40 +52,27 @@ Options OptionsFromArgs(int argc, char const *argv[]) {
         opts.phys_mem_kb = atoi(argv[4]);
 
         if (argc == 6) opts.debug_mode = atoi(argv[5]);
+        else opts.debug_mode = 0;
 
         return opts;
-    }
-    else {
+    } else {
         printf("ERRO: numero incorreto de argumentos (%d). Esperava 5 (ou 6).\n", argc);
         exit(EXIT_FAILURE); 
     }
 }
 
-void MemAccessPrint(MemAccess mem_access) {
-    printf("0x%08x - %c\n", mem_access.addr, mem_access.rw);
-}
-
-void SimulatorPrint(Simulator *sim) {
-    int i;
-
-    assert(sim);
-
-    for (i = 0; i < sim->length; i++) {
-        MemAccessPrint(sim->mem_accesses[i]);
-    }
-}
-
-Simulator *SimulatorInit(FILE *fp) {
+Simulator *SimulatorInit(Options opts) {
     Simulator *sim;
+    FILE *fp;
     int i = 0;
     unsigned addr;
     char rw;
 
-    assert(fp);
-
     sim = (Simulator *) malloc(sizeof(Simulator));
     mcheck(sim);
 
+    fp = (FILE *) fopen(opts.filename, "r");
+    fcheck(fp);
     while(fscanf(fp, "%x %c ", &addr, &rw) == 2) {
         if (i >= MEM_ACCESS_MAX) {
             printf("ERROR: ultrapassado numero maximo de linhas no arquivo de log.\n");
@@ -88,42 +83,12 @@ Simulator *SimulatorInit(FILE *fp) {
         assert(rw == 'R' || rw == 'W');
         i++;
     }
+    fclose(fp);
 
     sim->length = i;
 
     return sim;
 }
-
-int SimulatorLength(Simulator *sim) {
-    return sim->length;
-}
-
-/*
-Extraído de "Operating Systems - Design & Implementation" (livro do MINIX), pág.398:
-
-"The R and M bits can be used to build a simple paging algorithm as follows. When a process
-is started up, both page bits for all its pages are set to 0 by the operating system. 
-Periodically (e.g., on each clock interrupt), the R bit is cleared, to distinguish pages 
-that have not been referenced recently from those that have been.
-When a page fault occurs, the operating system inspects all the pages and divides them
-into four categories based on the current values of their R and M bits:
-
-Class 0: not referenced, not modified.
-Class 1: not referenced, modified.
-Class 2: referenced, not modified.
-Class 3: referenced, modified.
-
-Although class 1 pages seem, at first glance, impossible, they occur when a class 3 page has its R
-bit cleared by a clock interrupt. Clock interrupts do not clear the M bit because this information is
-needed to know whether the page has to be rewritten to disk or not. Clearing R but not M leads to
-a class 1 page.
-
-The NRU (Not Recently Used) algorithm removes a page at random from the lowest numbered
-nonempty class. Implicit in this algorithm is that it is better to remove a modified page that has
-not been referenced in at least one clock tick (typically 20 msec) than a clean page that is in
-heavy use. The main attraction of NRU is that it is easy to understand, moderately efficient to
-implement, and gives a performance that, while certainly not optimal, may be adequate."
-*/
 
 void SimulatorRun(Simulator *sim, int options) {
     int i;

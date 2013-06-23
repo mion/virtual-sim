@@ -45,11 +45,12 @@ int main(int argc, char const *argv[]) {
 
     opts = OptionsFromArgs(argc, argv);
 
-    sim = SimulatorInit(sim, opts);
+    sim = SimulatorInit(opts);
 
     SimulatorPrintOptions(sim);
     SimulatorRun(sim);
     SimulatorPrintResult(sim);
+    SimulatorDestroy(sim);
 
     printf("--- CONFIGURACAO DE ENTRADA ---\n");
     printf("\tArquivo de entrada: %s\n", filename_in);
