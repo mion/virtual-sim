@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <title>Relatório T2</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link href="http://twitter.github.io/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+    </head>
+    <body>
+        <div class="container">
+            <br><br>
+            <b>PUC-Rio</b><br>
+            <b>INF1019 - Sistemas de Computação</b><br>
+            <b>Professor: Markus Endler</b><br>
+            <br>
+            <b>Gabriel Amaral Fuchs 0911869</b><br>
+            <b>Gabriel Vieira 0910417</b>
+            <br><br>
+            <center><h1>Relatório T2</h1></center>
+            <section>
+                <div class="page-header"><h2>Descrição</h2></div>
+                <p> O objetivo do trabalho é implementar e analisar o desempenho, de algoritmos de paginação. São NRU (não utilizada recentemente), LRU (menos recentemente utilizada) e SEG (segunda chance). Os algoritmos são testados em diferentes situações, com tamanhos de páginas diferentes, depois que isto é feito os resultados de eficiência são apresentados e comparados.</p>
+            </section>
+            <section>
+                <div class="page-header"><h2>Arquivos</h2></div>
+                <p>Foi entregue um arquivo zip contendo este relatório, uma pasta <code>src</code> e uma pasta <code>extra</code>.</p>
+                <p>Na pasta <code>src</code> encontra-se o código do simulador. Ele está dividido em 7 arquivos:</p>
+                <dl class="dl-horizontal">
+                    <dt>main.c</dt>
+                    <dd>Ponto de entrada: faz um parsing dos argumentos da linha de comando, configurando e em seguida executando o simulador de acordo.</dd>
+                    <dt>simulador (.c/.h)</dt>
+                    <dd>Contém a lógica que recebe input e produz output para a simulação, encapsulando o módulo <b>memory</b>. Uma estrutura de dados <code>Simulator</code> é carregada com todos os acessos do arquivo de entrada, que são passados para a estrutura <code>Memory</code> conforme o decorrer da simulação.</dd>
+                    <dt>memory (.c/.h)</dt>
+                    <dd>Neste módulo é realizada a simulação propriamente dita. Aqui estão implementados os algoritmos de substituição de página, assim como a estrutura <code>PageFrame</code> que representa o quadro de página.</dd>
+                    <dt>util (.c/.h)</dt>
+                    <dd>Este módulo contém funções e macros utilitárias.</dd>
+                    <dt>Makefile</dt>
+                    <dd>Diretivas de compilação. Para compilar o simulador (em um Unix), execute na linha de comando: <code>$ mkdir bin</code>, <code>$ make</code> e para executar <code>$ bin/main compilador.log 4 128</code>.</dd>
+                </dl>
+                <p>A pasta <code>extra</code> contém alguns arquivos auxiliares interessantes mas não fazem parte do enunciado do trabalho. Por exemplo, para gerar os <u>gráficos</u> o programa <b>report.c</b> roda as combinações desejadas de tamanho/algoritmo e escreve o resultado em um JSON, que em seguida é consumido por um script em Python (<b>graphics.py</b>).</p>
+            </section>
+            <section>
+                <div class="page-header"><h2>Algoritmo</h2></div>
+                <p>A implementação de cada algoritmo encontra-se no módulo <code>memory.c</code>, nas funções <code>nru</code>, <code>lru</code> e <code>sec</code> (de <i>second chance</i>). Note que há também um "algoritmo" chamado <i>random</i>, em que as páginas a serem removidas são escolhidas de forma completamente aleatória (útil apenas para comparação/depuração).</p>
+            </section>
+            <section>
+                <div class="page-header"><h2>Análise</h2></div>
+                <p>A seguir apresentamos os gráficos com o resultado das simulações. Para cada programa (arquivo de log), analisamos o desempenho de cada algoritmo com dois gráficos, um para <b>páginas escritas</b> (páginas que estavam "sujas" ao serem substituídas) e outro para <b>páginas lidas</b> (páginas carregadas na memória após um <i>page fault</i>). Páginas que foram carregadas antes da memória física estar cheia e páginas que não foram escritas ao final da simulação <b>não foram levadas em conta</b>.</p>
+                <center><h3>Compilador</h3></center>
+                <embed src="compilador_reads.svg" type="image/svg+xml" /> 
+                <embed src="compilador_writes.svg" type="image/svg+xml" /> 
+            </section>
+        </div>
+    </body>
+</html>
+
