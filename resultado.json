@@ -1,0 +1,158 @@
+{
+"compilador.log": [{
+	"algoritmo": "LRU",
+	"resultado": [
+		{"tamanho": 4, "writes": 11737, "reads": 72632},
+		{"tamanho": 8, "writes": 14522, "reads": 96371},
+		{"tamanho": 12, "writes": 19562, "reads": 125345},
+		{"tamanho": 16, "writes": 23000, "reads": 133682},
+		{"tamanho": 20, "writes": 29970, "reads": 154921},
+		{"tamanho": 24, "writes": 35018, "reads": 169077},
+		{"tamanho": 28, "writes": 42166, "reads": 188973},
+		{"tamanho": 32, "writes": 39634, "reads": 170995}
+	]
+},
+{
+	"algoritmo": "NRU",
+	"resultado": [
+		{"tamanho": 4, "writes": 8591, "reads": 87381},
+		{"tamanho": 8, "writes": 13195, "reads": 104790},
+		{"tamanho": 12, "writes": 15782, "reads": 143917},
+		{"tamanho": 16, "writes": 16837, "reads": 160504},
+		{"tamanho": 20, "writes": 19261, "reads": 203610},
+		{"tamanho": 24, "writes": 21186, "reads": 238769},
+		{"tamanho": 28, "writes": 23986, "reads": 288967},
+		{"tamanho": 32, "writes": 22375, "reads": 262995}
+	]
+},
+{
+	"algoritmo": "SEG",
+	"resultado": [
+		{"tamanho": 4, "writes": 12952, "reads": 76751},
+		{"tamanho": 8, "writes": 16550, "reads": 100256},
+		{"tamanho": 12, "writes": 23000, "reads": 129520},
+		{"tamanho": 16, "writes": 26892, "reads": 138122},
+		{"tamanho": 20, "writes": 34384, "reads": 161560},
+		{"tamanho": 24, "writes": 39751, "reads": 179181},
+		{"tamanho": 28, "writes": 47508, "reads": 206038},
+		{"tamanho": 32, "writes": 44971, "reads": 186204}
+	]
+}],
+"compressor.log": [{
+	"algoritmo": "LRU",
+	"resultado": [
+		{"tamanho": 4, "writes": 702, "reads": 1399},
+		{"tamanho": 8, "writes": 897, "reads": 1844},
+		{"tamanho": 12, "writes": 1062, "reads": 2594},
+		{"tamanho": 16, "writes": 1162, "reads": 5863},
+		{"tamanho": 20, "writes": 14243, "reads": 18433},
+		{"tamanho": 24, "writes": 21008, "reads": 38641},
+		{"tamanho": 28, "writes": 32013, "reads": 46357},
+		{"tamanho": 32, "writes": 31786, "reads": 45944}
+	]
+},
+{
+	"algoritmo": "NRU",
+	"resultado": [
+		{"tamanho": 4, "writes": 517, "reads": 2482},
+		{"tamanho": 8, "writes": 660, "reads": 2509},
+		{"tamanho": 12, "writes": 1027, "reads": 3106},
+		{"tamanho": 16, "writes": 1086, "reads": 6733},
+		{"tamanho": 20, "writes": 11106, "reads": 42391},
+		{"tamanho": 24, "writes": 13440, "reads": 70378},
+		{"tamanho": 28, "writes": 18543, "reads": 113505},
+		{"tamanho": 32, "writes": 18464, "reads": 112170}
+	]
+},
+{
+	"algoritmo": "SEG",
+	"resultado": [
+		{"tamanho": 4, "writes": 798, "reads": 1569},
+		{"tamanho": 8, "writes": 959, "reads": 1960},
+		{"tamanho": 12, "writes": 1152, "reads": 2721},
+		{"tamanho": 16, "writes": 1275, "reads": 7364},
+		{"tamanho": 20, "writes": 17528, "reads": 26926},
+		{"tamanho": 24, "writes": 26037, "reads": 46573},
+		{"tamanho": 28, "writes": 36200, "reads": 56181},
+		{"tamanho": 32, "writes": 36011, "reads": 55689}
+	]
+}],
+"simulador.log": [{
+	"algoritmo": "LRU",
+	"resultado": [
+		{"tamanho": 4, "writes": 13730, "reads": 53985},
+		{"tamanho": 8, "writes": 18629, "reads": 82235},
+		{"tamanho": 12, "writes": 27533, "reads": 119371},
+		{"tamanho": 16, "writes": 31232, "reads": 124449},
+		{"tamanho": 20, "writes": 40509, "reads": 147123},
+		{"tamanho": 24, "writes": 50763, "reads": 165729},
+		{"tamanho": 28, "writes": 70037, "reads": 197502},
+		{"tamanho": 32, "writes": 57425, "reads": 149266}
+	]
+},
+{
+	"algoritmo": "NRU",
+	"resultado": [
+		{"tamanho": 4, "writes": 10554, "reads": 76202},
+		{"tamanho": 8, "writes": 16753, "reads": 94124},
+		{"tamanho": 12, "writes": 20937, "reads": 144949},
+		{"tamanho": 16, "writes": 22478, "reads": 163574},
+		{"tamanho": 20, "writes": 26665, "reads": 215954},
+		{"tamanho": 24, "writes": 30035, "reads": 255811},
+		{"tamanho": 28, "writes": 36179, "reads": 308280},
+		{"tamanho": 32, "writes": 32772, "reads": 246447}
+	]
+},
+{
+	"algoritmo": "SEG",
+	"resultado": [
+		{"tamanho": 4, "writes": 15127, "reads": 59197},
+		{"tamanho": 8, "writes": 20822, "reads": 87055},
+		{"tamanho": 12, "writes": 30914, "reads": 124028},
+		{"tamanho": 16, "writes": 36473, "reads": 130336},
+		{"tamanho": 20, "writes": 48621, "reads": 156597},
+		{"tamanho": 24, "writes": 60942, "reads": 178110},
+		{"tamanho": 28, "writes": 80002, "reads": 215127},
+		{"tamanho": 32, "writes": 68456, "reads": 163923}
+	]
+}],
+"matriz.log": [{
+	"algoritmo": "LRU",
+	"resultado": [
+		{"tamanho": 4, "writes": 9674, "reads": 38548},
+		{"tamanho": 8, "writes": 46114, "reads": 123410},
+		{"tamanho": 12, "writes": 53106, "reads": 202569},
+		{"tamanho": 16, "writes": 53053, "reads": 226175},
+		{"tamanho": 20, "writes": 53823, "reads": 251146},
+		{"tamanho": 24, "writes": 54479, "reads": 266526},
+		{"tamanho": 28, "writes": 55499, "reads": 286086},
+		{"tamanho": 32, "writes": 55137, "reads": 277710}
+	]
+},
+{
+	"algoritmo": "NRU",
+	"resultado": [
+		{"tamanho": 4, "writes": 7016, "reads": 66470},
+		{"tamanho": 8, "writes": 25790, "reads": 151752},
+		{"tamanho": 12, "writes": 36755, "reads": 258208},
+		{"tamanho": 16, "writes": 39070, "reads": 307461},
+		{"tamanho": 20, "writes": 41823, "reads": 413051},
+		{"tamanho": 24, "writes": 44291, "reads": 478344},
+		{"tamanho": 28, "writes": 47712, "reads": 540913},
+		{"tamanho": 32, "writes": 47176, "reads": 534048}
+	]
+},
+{
+	"algoritmo": "SEG",
+	"resultado": [
+		{"tamanho": 4, "writes": 13755, "reads": 47422},
+		{"tamanho": 8, "writes": 45000, "reads": 135487},
+		{"tamanho": 12, "writes": 53470, "reads": 206913},
+		{"tamanho": 16, "writes": 53585, "reads": 231466},
+		{"tamanho": 20, "writes": 54477, "reads": 259710},
+		{"tamanho": 24, "writes": 55183, "reads": 277875},
+		{"tamanho": 28, "writes": 56286, "reads": 305561},
+		{"tamanho": 32, "writes": 55899, "reads": 297048}
+	]
+}]
+}

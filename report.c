@@ -19,16 +19,16 @@ int main(int argc, char const *argv[]) {
     Simulator *sim; 
 
     printf("{\n");
-    for (i = 0; i < 3; i++) {
-        printf("\"%s\": [", algos[i]);
-        for (j = 0; j < 4; j++) {
-            strcpy(opts.filename, filenames[j]);
-            strcpy(opts.algo, algos[0]);
+    for (i = 0; i < 4; i++) {
+        printf("\"%s\": [", filenames[i]);
+        for (j = 0; j < 3; j++) {
+            strcpy(opts.filename, filenames[i]);
+            strcpy(opts.algo, algos[j]);
             opts.phys_mem_kb = 128;
             opts.debug_mode = 0;
 
             printf("{\n");
-            tab(1); printf("\"programa\": \"%s\",\n", filenames[j]);
+            tab(1); printf("\"algoritmo\": \"%s\",\n", algos[j]);
 
             tab(1); printf("\"resultado\": [\n");
             for (k = 0; k < 8; k++) {
@@ -47,9 +47,9 @@ int main(int argc, char const *argv[]) {
             }
             
             tab(1); printf("]\n");
-            printf("}"); if (j != 3) printf(",\n");
+            printf("}"); if (j != 2) printf(",\n");
         }
-        printf("]"); if(i != 2) printf(",");
+        printf("]"); if(i != 3) printf(",");
         printf("\n");
     }
     printf("}\n");
