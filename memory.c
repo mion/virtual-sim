@@ -9,6 +9,8 @@
 
 #define NOT_IN_MEMORY -1
 
+#define CLEAR_INTERVAL 3 /* De quanto em quanto tempo os bits R são limpados. */
+
 /********** ESTRUTURAS DE DADOS **********/
 
 /* Algoritmo de Page Replacement (substituição de página). */
@@ -64,17 +66,55 @@ PRAlgorithm AlgorithmFromString(char *str) {
     }
 }
 
-/* Escolhe uma página para ser retirada da memória. */
-int choose_page_frame(Memory *mem, PRAlgorithm algo) {
-    int frame_i = -1;
+int nru(Memory *mem) {
+    int i, k; 
+    queue frame_indexes[4]; 
 
-    if (algo == RANDOM) {
-        frame_i = rand() % mem->num_page_frames; /* Escolhe aleatóriamente. */
-    } else if(algo == NRU) {
-        
+    for (k = 0; k < 4; k++)
+        init_queue(&frame_indexes[k]);
+
+    for(i = 0; i < mem->num_page_frames; i++) {
+        int class = -1, r = mem->frames[i].referenced, m = mem->frames[i].modified;
+
+        if (r && m)         { class = 3; } 
+        else if (r && !m)   { class = 2; }
+        else if (!r && m)   { class = 1; }
+        else if (!r && !m)  { class = 0; }
+
+        assert(class != -1);
+                
+        push(&frame_indexes[class], i);
     }
 
-    DEBUG printf("Escolhendo frame_i: %d\n", frame_i);
+    DEBUG print_queue(&frame_indexes[0]);
+    DEBUG print_queue(&frame_indexes[1]);
+    DEBUG print_queue(&frame_indexes[2]);
+    DEBUG print_queue(&frame_indexes[3]);
+
+    for(k = 0; k < 4; k++) {
+        if (!empty(&frame_indexes[k])) {
+            return rand_elem(&frame_indexes[k]);
+        }
+    }
+
+    return -1;
+}
+
+/* Escolhe uma página para ser retirada da memória. */
+int choose_page_frame(Memory *mem) {
+    int frame_i = -1;
+
+    if (mem->algo == RANDOM) {
+        DEBUG printf("[!] Executando algoritmo 'aleatorio'\n");
+        frame_i = rand() % mem->num_page_frames; /* Escolhe aleatóriamente. */
+    } else if(mem->algo == NRU) {
+        DEBUG printf("[!] Executando algoritmo 'nru'\n");
+        frame_i = nru(mem);
+    }
+
+    DEBUG printf("Escolhido frame_i: %d\n", frame_i);
+
+    assert(frame_i != -1);
 
     return frame_i;
 }
@@ -188,7 +228,7 @@ void MemoryClockInterrupt(Memory *mem) {
 
     mem->time_counter += 1;
 
-    if (mem->time_counter % 2 == 0) {
+    if (mem->time_counter % CLEAR_INTERVAL == 0) {
         DEBUG printf("[clock interrupt] LIMPANDO BITS R\n\n");
 
         for (i = 0; i < mem->num_page_frames; i++) {
@@ -216,7 +256,7 @@ void MemoryAccess(Memory *mem, unsigned vir_addr, char rw) {
             int chosen_frame_i; 
 
             /* Quando ocorre uma 'page fault', deve-se escolher uma página... */
-            chosen_frame_i = choose_page_frame(mem, RANDOM);
+            chosen_frame_i = choose_page_frame(mem);
             /* Se a página foi modificada, é necessário rescrever-la no HD,
             para atualizar a cópia que estava no disco. */
             check_modified(mem, chosen_frame_i);

@@ -104,7 +104,6 @@ void SimulatorRun(Simulator *sim) {
         MemoryAccess(sim->mem, sim->mem_accesses[i].addr, sim->mem_accesses[i].rw);
 
         DEBUG MemoryPrintFrames(sim->mem);
-
         DEBUG getchar();
     }
 }

@@ -93,15 +93,20 @@ int empty(queue *q) {
 void print_queue(queue *q) {
         int i;
 
-        printf("Last: %d\nFirst: %d\nCount: %d\n", q->elem[q->last], q->elem[q->first], q->count);
+        if (empty(q)) {
+            printf("[]\n");
+            return;
+        }
+
+        // printf("l: %d, f: %d, c: %d, e: [", q->elem[q->last], q->elem[q->first], q->count);
+        printf("[");
 
         i=q->first; 
         
         while (i != q->last) {
-                printf("%d ",q->elem[i]);
+                printf("%d, ",q->elem[i]);
                 i = (i+1) % MAX_QUEUE;
         }
 
-        printf("%d ",q->elem[i]);
-        printf("\n\n");
+        printf("%d]\n",q->elem[i]);
 }

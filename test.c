@@ -7,37 +7,32 @@
 #include "util.h"
 
 int main(int argc, char const *argv[]) {
-    queue q;
-    int i;
+    // queue q;
 
-    srand(time(NULL));
+    // init_queue(&q);
 
-    init_queue(&q);
+    // push(&q, 5);
+    // push(&q, 0);
+    // push(&q, 1);
+    // push(&q, 2);
 
-    for(i = 0; i < 15; i++) {
-        push(&q, rand() % 1000);
-    }
+    // print_queue(&q);
 
-    printf("%d\n", pop(&q));
+    Options opts;
+    Simulator * sim;
 
-    print_queue(&q);
+    strcpy(opts.filename, "file.log");
+    strcpy(opts.algo, "NRU");
+    opts.p_size_kb = 4;
+    opts.phys_mem_kb = 16;
+    opts.debug_mode = 1;
 
-    printf("Random elem: %d\n", rand_elem(&q));
-    // Options opts;
-    // Simulator * sim;
+    OptionsPrint(opts);
 
-    // strcpy(opts.filename, "file.log");
-    // strcpy(opts.algo, "RND");
-    // opts.p_size_kb = 4;
-    // opts.phys_mem_kb = 16;
-    // opts.debug_mode = 1;
-
-    // OptionsPrint(opts);
-
-    // sim = SimulatorInit(opts);
-    // SimulatorRun(sim);
-    // SimulatorPrintResult(sim);
-    // SimulatorDestroy(sim);
+    sim = SimulatorInit(opts);
+    SimulatorRun(sim);
+    SimulatorPrintResult(sim);
+    SimulatorDestroy(sim);
 
     return 0;
 }
