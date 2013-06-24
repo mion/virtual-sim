@@ -29,7 +29,8 @@ não ser necessário guardar um vetor de 1M de páginas virtuais. */
 typedef struct PageFrame {
     int referenced, 
         modified, 
-        last_access;
+        last_access,
+        first_access;
     int vir_i; /* Índice na tabela de páginas virtuais (p_table) */
 } PageFrame;
 
@@ -101,26 +102,26 @@ int nru(Memory *mem) {
 }
 
 int sec(Memory *mem) {
-    int i, last_access; 
+    int i, first_access; 
     list *frames_age_desc = EMPTY_LIST;
 
     for (i = 0; i < mem->num_page_frames; i++) {
-        frames_age_desc = list_insert(frames_age_desc, i, mem->frames[i].last_access);
+        frames_age_desc = list_insert(frames_age_desc, i, mem->frames[i].first_access);
     }
 
     DEBUG list_print(frames_age_desc);
 
     while (1) {
-        frames_age_desc = list_remove_first(frames_age_desc, &i, &last_access);
+        frames_age_desc = list_remove_first(frames_age_desc, &i, &first_access);
 
         DEBUG printf("Retirado frame %d da lista, escolhe esse? ", i);
 
         if (!mem->frames[i].referenced) break;
         else {
             DEBUG printf("Nao, coloca de volta.\n");
-            mem->frames[i].last_access = mem->time_counter;
+            mem->frames[i].first_access = mem->time_counter;
             mem->frames[i].referenced = FALSE;
-            frames_age_desc = list_insert(frames_age_desc, i, mem->frames[i].last_access);
+            frames_age_desc = list_insert(frames_age_desc, i, mem->frames[i].first_access);
         }
 
         DEBUG list_print(frames_age_desc);
@@ -165,6 +166,7 @@ void evict_page(Memory *mem, int frame_i) {
     mem->frames[frame_i].referenced = FALSE;
     mem->frames[frame_i].modified = FALSE;
     mem->frames[frame_i].last_access = -1;
+    mem->frames[frame_i].first_access = -1;    
 }
 
 /*  Verifica se o quadro de página com índice frame_i foi modificado e 
@@ -193,6 +195,7 @@ void load_page(Memory *mem, int vir_i, int frame_i, char rw) {
 
     mem->frames[frame_i].vir_i = vir_i;
     mem->frames[frame_i].last_access = mem->time_counter;
+    mem->frames[frame_i].first_access = mem->time_counter;
 
     mem->frames[frame_i].referenced = TRUE;
     if (rw == 'W') {
@@ -323,12 +326,13 @@ void MemoryPrintFrames(Memory *mem) {
 
     printf("\nContador TEMPO: %d\n+", mem->time_counter);
     for (i = 0; i < 50; i++) printf("-");
-    printf("\n|\tframe_i\tvir_i\tref\tmod\tlast_access\n");
+    printf("\n|\tframe_i\tvir_i\tref\tmod\tfirst\tlast\n");
     for (i = 0; i < mem->num_page_frames; i++) {
-        printf("|\t%d\t%d\t%d\t%d\t%d\n", i, 
+        printf("|\t%d\t%d\t%d\t%d\t%d\t%d\n", i, 
                                          mem->frames[i].vir_i, 
                                          mem->frames[i].referenced, 
-                                         mem->frames[i].modified,
+                                         mem->frames[i].modified,                                         
+                                         mem->frames[i].first_access,
                                          mem->frames[i].last_access);
     } 
 
