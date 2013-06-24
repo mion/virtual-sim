@@ -33,4 +33,21 @@ void print_header(const char *str);
 void set_debug_mode(int debug_mode);
 int get_debug_mode(void);
 
+/* Fila de inteiros para auxiliar em alguns algoritmos. */
+#define MAX_QUEUE 50000
+
+typedef struct queue {
+    int elem[MAX_QUEUE+1],
+        first,
+        last, 
+        count;
+} queue;
+
+void init_queue(queue *q);
+int push(queue *q, int x);
+int pop(queue *q);
+int empty(queue *q);
+void print_queue(queue *q);
+int rand_elem(queue *q);
+
 #endif

@@ -68,8 +68,11 @@ PRAlgorithm AlgorithmFromString(char *str) {
 int choose_page_frame(Memory *mem, PRAlgorithm algo) {
     int frame_i = -1;
 
-    if (algo == RANDOM)
+    if (algo == RANDOM) {
         frame_i = rand() % mem->num_page_frames; /* Escolhe aleatóriamente. */
+    } else if(algo == NRU) {
+        
+    }
 
     DEBUG printf("Escolhendo frame_i: %d\n", frame_i);
 
