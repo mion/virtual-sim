@@ -33,7 +33,7 @@ typedef struct PageFrame {
 
 struct Memory {
     PRAlgorithm algo;
-    PageFrame *frames;          /* Quadro de páginas */
+    PageFrame *frames;          /* Quadro de páginas (memória física) */
     int time_counter,           /* Contador de tempo (atualizado a cada clock interrupt) */
         num_virtual_pages,      /* Número de páginas virtuais */
         page_size,              /* Tamanho de uma página em KB */
@@ -46,14 +46,6 @@ struct Memory {
 };
 
 /********** FUNÇÕES INTERNAS/AUXILIARES **********/
-
-
-/* Retorna o índice de uma página baseado em um endereço lógico. */
-unsigned vir_to_p(unsigned addr, unsigned p_size_kb) {
-    assert(p_size_kb > 0);
-
-    return addr >> (lg2(p_size_kb) + 10u);
-}
 
 PRAlgorithm AlgorithmFromString(char *str) {
     assert(str);
@@ -136,12 +128,12 @@ int find_frame(Memory *mem, int vir_i) {
 
     for (i = 0; i < mem->num_page_frames; i++) {
         if (mem->frames[i].vir_i == vir_i) {
-            DEBUG printf("encontrada %d!\n", i);
+            DEBUG printf("frame_i = %d\n", i);
             return i;
         }
     }
 
-    DEBUG printf("NAO encontrada!\n");
+    DEBUG printf("nao encontrada!\n");
 
     return NOT_IN_MEMORY;
 }
@@ -192,7 +184,7 @@ void MemoryClockInterrupt(Memory *mem) {
     mem->time_counter += 1;
 
     if (mem->time_counter % 2 == 0) {
-        DEBUG printf("Limpando bits R\n");
+        DEBUG printf("[clock interrupt] LIMPANDO BITS R\n\n");
 
         for (i = 0; i < mem->num_page_frames; i++) {
             mem->frames[i].referenced =  FALSE;       
@@ -200,21 +192,15 @@ void MemoryClockInterrupt(Memory *mem) {
     }
 }
 
-void MemoryAccess(Memory *mem, unsigned addr, char rw) {
+void MemoryAccess(Memory *mem, unsigned vir_addr, char rw) {
     int vir_i, frame_i;
 
-    vir_i = addr >> (lg2(mem->page_size) + 10);
+    vir_i = vir_addr >> (lg2(mem->page_size) + 10);
     frame_i = find_frame(mem, vir_i);
-
-    DEBUG printf("Acesso: %x %c\n", addr, rw);
-
-    DEBUG printvar(vir_i);
-    DEBUG printvar(frame_i);
-    DEBUG printvar(mem->num_used_page_frames);
 
     /* Page fault? */
     if (frame_i == NOT_IN_MEMORY) {
-        DEBUG printf("Page fault!\n"); 
+        DEBUG printf("==> PAGE FAULT!\n"); 
 
         /* Algoritmo só entra em ação quando a memória física estiver cheia. */
         if (mem->num_used_page_frames < mem->num_page_frames) { 
@@ -238,7 +224,7 @@ void MemoryAccess(Memory *mem, unsigned addr, char rw) {
             mem->frames[chosen_frame_i].referenced = TRUE;
         }
     } else {
-        DEBUG printf("Page HIT!\n");
+        DEBUG printf("==> Page HIT!\n");
 
         mem->frames[frame_i].referenced = TRUE ;
 

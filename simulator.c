@@ -91,10 +91,17 @@ void SimulatorRun(Simulator *sim) {
     DEBUG MemoryPrintFrames(sim->mem);
 
     for (i = 0; i < sim->num_mem_accesses; i++) {
-        DEBUG printf("\t\tLinha %d / %d\n\n", i + 1, sim->num_mem_accesses);
+        DEBUG printf("\t\tAcesso %d / %d\n\n\t- %x %c\n", 
+                        i + 1, 
+                        sim->num_mem_accesses,
+                        sim->mem_accesses[i].addr,
+                        sim->mem_accesses[i].rw);
+        DEBUG printf("\t- Page faults: %d\n\t- Paginas escritas: %d\n\n", 
+                        MemoryStatistics(sim->mem).writes_to_disk,
+                        MemoryStatistics(sim->mem).page_faults);
 
-        MemoryAccess(sim->mem, sim->mem_accesses[i].addr, sim->mem_accesses[i].rw);
         MemoryClockInterrupt(sim->mem);
+        MemoryAccess(sim->mem, sim->mem_accesses[i].addr, sim->mem_accesses[i].rw);
 
         DEBUG MemoryPrintFrames(sim->mem);
 
