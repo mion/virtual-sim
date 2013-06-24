@@ -110,3 +110,100 @@ void print_queue(queue *q) {
 
         printf("%d]\n",q->elem[i]);
 }
+
+/* Implementação bem simples de uma lista. */
+
+list *list_create(int key, int score) {
+    list *l = (list *) malloc(sizeof(list)); 
+    mcheck(l);
+
+    l->key = key;
+    l->score = score;
+    l->tail = NULL;
+
+    return l;
+}
+
+list *list_destroy(list *l) {
+    if (l) {
+        list_destroy(l->tail);
+        free(l);
+    }
+    return NULL;
+}
+
+list *list_append(list *l, int key, int score) {
+    if (!l) {
+        return list_create(key, score); 
+    } else {
+        l->tail = list_append(l->tail, key, score); 
+        return l;
+    }
+}
+
+list *list_prepend(list *l, int key, int score) {
+    list *head = list_create(key, score);
+    head->tail = l;
+
+    return head;
+}
+
+list *list_last(list *l) {
+    while (l && l->tail) l = l->tail;
+    return l;
+}
+
+list *list_insert(list *l, int key, int score) {
+    if (!l) {
+        return list_create(key, score);
+    } else {
+        if (score <= l->score) {
+            return list_prepend(l, key, score);
+        } else {
+            l->tail = list_insert(l->tail, key, score); 
+            return l;
+        }
+    }
+}
+
+list *list_remove_first(list *l, int *key, int *score) {
+    if (!l) return NULL;
+    else { 
+        list *head = l->tail;
+        *key = l->key;
+        *score = l->score;
+        free(l);
+        return head;
+    }
+}
+
+int list_ordered(list *l) {
+    if (!l) return 1;
+    else {
+        if (!l->tail) return 1;
+        else return (l->score <= l->tail->score) && list_ordered(l->tail);
+    } 
+}
+
+int list_contains(list *l, int key) {
+    if (!l) return 0;
+    else {
+        if (l->key == key) return 1;
+        else return list_contains(l->tail, key);
+    }
+}
+
+int list_count(list *l) {
+    if (!l) return 0;
+    else {
+        return 1 + list_count(l->tail);
+    }
+}
+
+void list_print(list *l) {
+    if (!l) printf("null\n");
+    else {
+        printf("%d {%d} -> ", l->key, l->score);
+        list_print(l->tail);
+    }
+}
