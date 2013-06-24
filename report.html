@@ -43,8 +43,10 @@
                 <p>A pasta <code>extra</code> contém alguns arquivos auxiliares interessantes mas não fazem parte do enunciado do trabalho. Por exemplo, para gerar os <u>gráficos</u> o programa <b>report.c</b> roda as combinações desejadas de tamanho/algoritmo e escreve o resultado em um JSON, que em seguida é consumido por um script em Python (<b>graphics.py</b>).</p>
             </section>
             <section>
-                <div class="page-header"><h2>Algoritmo</h2></div>
-                <p>A implementação de cada algoritmo encontra-se no módulo <code>memory.c</code>, nas funções <code>nru</code>, <code>lru</code> e <code>sec</code> (de <i>second chance</i>). Note que há também um "algoritmo" chamado <i>random</i>, em que as páginas a serem removidas são escolhidas de forma completamente aleatória (útil apenas para comparação/depuração).</p>
+                <div class="page-header"><h2>Algoritmos</h2></div>
+                <p>A implementação de cada algoritmo encontra-se no módulo <code>memory.c</code>, nas funções <code>nru</code>, <code>lru</code> e <code>sec</code> (de <i>second chance</i>). Há também um "algoritmo" chamado <i>random</i>, em que as páginas a serem removidas são escolhidas de forma completamente aleatória (útil apenas para comparação/depuração).</p>
+                <p>Note que algoritmo <b>LRU</b> foi implementado de maneira teórica, isto é, dificilmente seria implementado desta forma na prática (seria muito custoso). Decidimos assim por razões de simplicidade e também de comparação.</p>
+                <p>Outro fator importante a ser considerado é o intervalo de tempo em que os bits <code>R</code> são limpados da memória. Nesta implementação, limpamos os bits a cada 1000 acessos à memória (segundo o livro um <i>clock interrupt</i> ocorre a cada 20msec e uma instrução/acesso leva algo em torno de 250ps, logo 1000 é uma aproximação razoável). Ao alterar esse valor (<code>#define CLEAR_INTERVAL 1000</code> no arquivo <i>memory.c</i>) pode-se obter resultados bem variados.</p>
             </section>
             <section>
                 <div class="page-header"><h2>Análise</h2></div>
@@ -52,6 +54,18 @@
                 <center><h3>Compilador</h3></center>
                 <embed src="compilador_reads.svg" type="image/svg+xml" /> 
                 <embed src="compilador_writes.svg" type="image/svg+xml" /> 
+                <hr>
+                <center><h3>Compressor</h3></center>
+                <embed src="compressor_reads.svg" type="image/svg+xml" /> 
+                <embed src="compressor_writes.svg" type="image/svg+xml" /> 
+                <hr>
+                <center><h3>Simulador</h3></center>
+                <embed src="simulador_reads.svg" type="image/svg+xml" /> 
+                <embed src="simulador_writes.svg" type="image/svg+xml" /> 
+                <hr>
+                <center><h3>Matriz</h3></center>
+                <embed src="matriz_reads.svg" type="image/svg+xml" /> 
+                <embed src="matriz_writes.svg" type="image/svg+xml" /> 
             </section>
         </div>
     </body>

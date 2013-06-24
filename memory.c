@@ -9,7 +9,7 @@
 
 #define NOT_IN_MEMORY -1
 
-#define CLEAR_INTERVAL 100 /* De quanto em quanto tempo os bits R são limpados. */
+#define CLEAR_INTERVAL 1000 /* De quanto em quanto tempo os bits R são limpados. */
 
 /********** ESTRUTURAS DE DADOS **********/
 
