@@ -24,4 +24,6 @@ void MemoryPrintFrames(Memory *mem);
 
 Statistics MemoryStatistics(Memory *mem);
 
+int MemoryTime(Memory *mem);
+
 #endif

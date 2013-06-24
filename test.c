@@ -111,7 +111,7 @@ void test_simulator(void) {
     Simulator * sim;
 
     strcpy(opts.filename, "file.log");
-    strcpy(opts.algo, "NRU");
+    strcpy(opts.algo, "SEG");
     opts.p_size_kb = 4;
     opts.phys_mem_kb = 16;
     opts.debug_mode = 1;
@@ -127,7 +127,7 @@ void test_simulator(void) {
 int main(int argc, char const *argv[]) {
     srand(time(NULL));
 
-    test_list();
+    test_simulator();
 
     return 0;
 }

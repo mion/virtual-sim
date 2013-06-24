@@ -9,7 +9,7 @@
 
 #define NOT_IN_MEMORY -1
 
-#define CLEAR_INTERVAL 3 /* De quanto em quanto tempo os bits R são limpados. */
+#define CLEAR_INTERVAL 9 /* De quanto em quanto tempo os bits R são limpados. */
 
 /********** ESTRUTURAS DE DADOS **********/
 
@@ -100,6 +100,39 @@ int nru(Memory *mem) {
     return -1;
 }
 
+int sec(Memory *mem) {
+    int i, last_access; 
+    list *frames_age_desc = EMPTY_LIST;
+
+    for (i = 0; i < mem->num_page_frames; i++) {
+        frames_age_desc = list_insert(frames_age_desc, i, mem->frames[i].last_access);
+    }
+
+    DEBUG list_print(frames_age_desc);
+
+    while (1) {
+        frames_age_desc = list_remove_first(frames_age_desc, &i, &last_access);
+
+        DEBUG printf("Retirado frame %d da lista, escolhe esse? ", i);
+
+        if (!mem->frames[i].referenced) break;
+        else {
+            DEBUG printf("Nao, coloca de volta.\n");
+            mem->frames[i].last_access = mem->time_counter;
+            mem->frames[i].referenced = FALSE;
+            frames_age_desc = list_insert(frames_age_desc, i, mem->frames[i].last_access);
+        }
+
+        DEBUG list_print(frames_age_desc);
+    }
+
+    DEBUG printf("Sim!\n");
+
+    frames_age_desc = list_destroy(frames_age_desc);
+
+    return i;
+}
+
 /* Escolhe uma página para ser retirada da memória. */
 int choose_page_frame(Memory *mem) {
     int frame_i = -1;
@@ -110,6 +143,9 @@ int choose_page_frame(Memory *mem) {
     } else if(mem->algo == NRU) {
         DEBUG printf("[!] Executando algoritmo 'nru'\n");
         frame_i = nru(mem);
+    } else if(mem->algo == SEC) {
+        DEBUG printf("[!] Executando algoritmo 'segunda chance'\n");
+        frame_i = sec(mem);
     }
 
     DEBUG printf("Escolhido frame_i: %d\n", frame_i);
@@ -128,6 +164,7 @@ void evict_page(Memory *mem, int frame_i) {
     mem->frames[frame_i].vir_i = NOT_IN_MEMORY;
     mem->frames[frame_i].referenced = FALSE;
     mem->frames[frame_i].modified = FALSE;
+    mem->frames[frame_i].last_access = -1;
 }
 
 /*  Verifica se o quadro de página com índice frame_i foi modificado e 
@@ -155,6 +192,7 @@ void load_page(Memory *mem, int vir_i, int frame_i, char rw) {
     DEBUG printf("Carregando novo quadro %d em vir_i=%d, rw=%c\n", frame_i, vir_i, rw);
 
     mem->frames[frame_i].vir_i = vir_i;
+    mem->frames[frame_i].last_access = mem->time_counter;
 
     mem->frames[frame_i].referenced = TRUE;
     if (rw == 'W') {
@@ -211,7 +249,7 @@ Memory *MemoryInit(char *algo, int p_size_kb, int phys_mem_kb) {
     for (i = 0; i < mem->num_page_frames; i++) {
         mem->frames[i].referenced = FALSE;
         mem->frames[i].modified = FALSE;
-        mem->frames[i].last_access = 0;
+        mem->frames[i].last_access = -1;
         mem->frames[i].vir_i = NOT_IN_MEMORY;
     }
 
@@ -271,6 +309,7 @@ void MemoryAccess(Memory *mem, unsigned vir_addr, char rw) {
         DEBUG printf("==> Page HIT!\n");
 
         mem->frames[frame_i].referenced = TRUE ;
+        mem->frames[frame_i].last_access = mem->time_counter;
 
         if (rw == 'W') {
             mem->frames[frame_i].modified = TRUE;
@@ -282,13 +321,15 @@ void MemoryAccess(Memory *mem, unsigned vir_addr, char rw) {
 void MemoryPrintFrames(Memory *mem) {
     int i;
 
-    printf("\n+");
+    printf("\nContador TEMPO: %d\n+", mem->time_counter);
     for (i = 0; i < 50; i++) printf("-");
-    printf("\n|\tframe_i\tvir_i\tref\tmod\n");
+    printf("\n|\tframe_i\tvir_i\tref\tmod\tlast_access\n");
     for (i = 0; i < mem->num_page_frames; i++) {
-        printf("|\t%d\t%d\t%d\t%d\n", i, mem->frames[i].vir_i, 
+        printf("|\t%d\t%d\t%d\t%d\t%d\n", i, 
+                                         mem->frames[i].vir_i, 
                                          mem->frames[i].referenced, 
-                                         mem->frames[i].modified);
+                                         mem->frames[i].modified,
+                                         mem->frames[i].last_access);
     } 
 
     printf("+");
@@ -298,4 +339,8 @@ void MemoryPrintFrames(Memory *mem) {
 
 Statistics MemoryStatistics(Memory *mem) {
     return mem->stats;
+}
+
+int MemoryTime(Memory *mem) {
+    return mem->time_counter;
 }
