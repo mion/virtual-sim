@@ -84,22 +84,24 @@ void evict_page(Memory *mem, int frame_i) {
 
     mem->frames[frame_i].vir_i = NOT_IN_MEMORY;
     mem->frames[frame_i].referenced = FALSE;
-    // frames[frame_i].modified = FALSE;
+    mem->frames[frame_i].modified = FALSE;
 }
 
 /*  Verifica se o quadro de página com índice frame_i foi modificado e 
     simula a escrita ao disco.
     Nesse caso, para simular a escrita, basta incrementar um contador. */
 void check_modified(Memory *mem, int frame_i) {
-    DEBUG printf("Quadro de pagina %d foi modificado? ", frame_i); 
+    DEBUG printf("Quadro de pagina %d tinha sido modificado? ", frame_i); 
     if (mem->frames[frame_i].modified) {
-        DEBUG printf("SIM! Incrementando numero de escritas...\n");
+        DEBUG printf("SIM! +1 Pagina escrita\n");
 
         mem->stats.writes_to_disk += 1;
 
         DEBUG printvar(mem->stats.writes_to_disk);
-    }
-    DEBUG printf("Nao!\n");
+    } else { 
+        DEBUG printf("NAO! +1 Pagina lida\n"); 
+        mem->stats.page_faults += 1;
+    } 
 }
 
 /* Simula o carregamento de um quadro de página na memória física. */
@@ -107,7 +109,7 @@ void load_page(Memory *mem, int vir_i, int frame_i, char rw) {
     assert_index(vir_i, mem->num_virtual_pages);
     assert_index(frame_i, mem->num_page_frames);
 
-    DEBUG printf("Carregando quadro %d em vir_i=%d, rw=%c\n", frame_i, vir_i, rw);
+    DEBUG printf("Carregando novo quadro %d em vir_i=%d, rw=%c\n", frame_i, vir_i, rw);
 
     mem->frames[frame_i].vir_i = vir_i;
 
@@ -204,20 +206,19 @@ void MemoryAccess(Memory *mem, unsigned vir_addr, char rw) {
 
         /* Algoritmo só entra em ação quando a memória física estiver cheia. */
         if (mem->num_used_page_frames < mem->num_page_frames) { 
+            DEBUG printf("[!] Algoritmo nao entra em acao ainda: %d paginas vazias.\n", mem->num_page_frames - mem->num_used_page_frames);
             load_page(mem, vir_i, mem->num_used_page_frames, rw);
             mem->num_used_page_frames += 1;
         } else {
             int chosen_frame_i; 
 
-            mem->stats.page_faults += 1;
-
             /* Quando ocorre uma 'page fault', deve-se escolher uma página... */
             chosen_frame_i = choose_page_frame(mem, RANDOM);
-            /* ...para ser retirada da memória. */
-            evict_page(mem, chosen_frame_i);
             /* Se a página foi modificada, é necessário rescrever-la no HD,
             para atualizar a cópia que estava no disco. */
             check_modified(mem, chosen_frame_i);
+            /* ...para ser retirada da memória. */
+            evict_page(mem, chosen_frame_i);
             /* Coloca a nova página na memória. */
             load_page(mem, vir_i, chosen_frame_i, rw);
 

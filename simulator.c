@@ -25,7 +25,7 @@ struct Simulator {
 /********** FUNÇÕES PÚBLICAS **********/
 
 Options OptionsFromArgs(int argc, char const *argv[]) {    
-    if (argc == 5) {
+    if (argc == 5 || argc == 6) {
         Options opts;
 
         strcpy(opts.algo, argv[1]);
@@ -91,12 +91,12 @@ void SimulatorRun(Simulator *sim) {
     DEBUG MemoryPrintFrames(sim->mem);
 
     for (i = 0; i < sim->num_mem_accesses; i++) {
-        DEBUG printf("\t\tAcesso %d / %d\n\n\t- %x %c\n", 
+        DEBUG printf("\n\n\n\t\tAcesso %d / %d\n\n\t- %x %c\n", 
                         i + 1, 
                         sim->num_mem_accesses,
                         sim->mem_accesses[i].addr,
                         sim->mem_accesses[i].rw);
-        DEBUG printf("\t- Page faults: %d\n\t- Paginas escritas: %d\n\n", 
+        DEBUG printf("\t- Paginas escritas: %d\n\t- Paginas lidas: %d\n\n", 
                         MemoryStatistics(sim->mem).writes_to_disk,
                         MemoryStatistics(sim->mem).page_faults);
 
@@ -112,7 +112,9 @@ void SimulatorRun(Simulator *sim) {
 void SimulatorPrintResult(Simulator *sim) {
     Statistics stats = MemoryStatistics(sim->mem);
 
-    printf("Escritas ao disco: %d\nPage faults: %d\n", 
+    print_header("RESULTADO");
+    printf("\tNumero total de acessos a memoria: %d\n\tPaginas escritas: %d\n\tPaginas lidas: %d\n", 
+        sim->num_mem_accesses,
         stats.writes_to_disk, 
         stats.page_faults);
 }
