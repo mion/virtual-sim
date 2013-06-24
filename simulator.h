@@ -29,6 +29,7 @@ void SimulatorRun(Simulator *sim);
 
 /* Imprime o resultado da simulação. */
 void SimulatorPrintResult(Simulator *sim);
+void SimulatorResult(Simulator *sim, int *writes_to_disk, int *page_faults);
 
 /* Desaloca recursos utilizados pelo simulador. */
 void SimulatorDestroy(Simulator *sim);

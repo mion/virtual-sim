@@ -118,6 +118,13 @@ void SimulatorPrintResult(Simulator *sim) {
         stats.page_faults);
 }
 
+void SimulatorResult(Simulator *sim, int *writes_to_disk, int *page_faults) {
+    Statistics stats = MemoryStatistics(sim->mem);
+
+    *writes_to_disk = stats.writes_to_disk;
+    *page_faults = stats.page_faults;    
+}
+
 void SimulatorDestroy(Simulator *sim) {
     MemoryDestroy(sim->mem);
     free(sim);

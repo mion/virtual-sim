@@ -4,3 +4,5 @@ bin/
 *.sublime-build
 *.zip
 *.log
+*.svg
+*.csv

@@ -111,7 +111,7 @@ void test_simulator(void) {
     Simulator * sim;
 
     strcpy(opts.filename, "file.log");
-    strcpy(opts.algo, "SEG");
+    strcpy(opts.algo, "LRU");
     opts.p_size_kb = 4;
     opts.phys_mem_kb = 16;
     opts.debug_mode = 1;

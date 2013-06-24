@@ -9,7 +9,7 @@
 
 #define NOT_IN_MEMORY -1
 
-#define CLEAR_INTERVAL 9 /* De quanto em quanto tempo os bits R são limpados. */
+#define CLEAR_INTERVAL 100 /* De quanto em quanto tempo os bits R são limpados. */
 
 /********** ESTRUTURAS DE DADOS **********/
 
@@ -134,6 +134,24 @@ int sec(Memory *mem) {
     return i;
 }
 
+int lru(Memory *mem) {
+    int i, last_access;
+    list *frames_usage_desc = EMPTY_LIST;
+
+    for (i = 0; i < mem->num_page_frames; i++) {
+        frames_usage_desc = list_insert(frames_usage_desc, i, mem->frames[i].last_access);
+    }
+    DEBUG list_print(frames_usage_desc);
+
+    frames_usage_desc = list_remove_first(frames_usage_desc, &i, &last_access);
+
+    DEBUG printf("Quadro utilizado menos recentemente: %d\n", i);
+
+    frames_usage_desc = list_destroy(frames_usage_desc);
+
+    return i;
+}
+
 /* Escolhe uma página para ser retirada da memória. */
 int choose_page_frame(Memory *mem) {
     int frame_i = -1;
@@ -147,6 +165,9 @@ int choose_page_frame(Memory *mem) {
     } else if(mem->algo == SEC) {
         DEBUG printf("[!] Executando algoritmo 'segunda chance'\n");
         frame_i = sec(mem);
+    } else if(mem->algo == LRU) {        
+        DEBUG printf("[!] Executando algoritmo 'lru'\n");
+        frame_i = lru(mem);
     }
 
     DEBUG printf("Escolhido frame_i: %d\n", frame_i);
