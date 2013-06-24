@@ -12,7 +12,7 @@ int main(int argc, char const *argv[]) {
     strcpy(opts.algo, "RND");
     opts.p_size_kb = 4;
     opts.phys_mem_kb = 16;
-    opts.debug_mode = 0;
+    opts.debug_mode = 1;
 
     OptionsPrint(opts);
 

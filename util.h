@@ -6,11 +6,9 @@
 #define TRUE 1
 #define FALSE 0
 
-#if 0
-#define DEBUG
-#else
-#define DEBUG if(0)
-#endif
+/* MODO DE DEPURAÇÃO
+Só existe um modo de depuração. */
+#define DEBUG if(get_debug_mode())
 
 /* Imprime o nome do int e o seu valor. */
 #define printvar(name) (printf("%s = %d\n", #name, name))
@@ -31,5 +29,8 @@ void assert_bounds(int i, int lower, int upper);
 void assert_index(int i, int size);
 
 void print_header(const char *str);
+
+void set_debug_mode(int debug_mode);
+int get_debug_mode(void);
 
 #endif

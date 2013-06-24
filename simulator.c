@@ -59,6 +59,8 @@ Simulator *SimulatorInit(Options opts) {
     unsigned addr;
     char rw;
 
+    set_debug_mode(opts.debug_mode);
+
     sim = (Simulator *) malloc(sizeof(Simulator));
     mcheck(sim);
 

@@ -47,6 +47,7 @@ struct Memory {
 
 /********** FUNÇÕES INTERNAS/AUXILIARES **********/
 
+
 /* Retorna o índice de uma página baseado em um endereço lógico. */
 unsigned vir_to_p(unsigned addr, unsigned p_size_kb) {
     assert(p_size_kb > 0);
