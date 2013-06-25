@@ -2,157 +2,157 @@
 "compilador.log": [{
 	"algoritmo": "LRU",
 	"resultado": [
-		{"tamanho": 4, "writes": 11737, "reads": 72632},
-		{"tamanho": 8, "writes": 14522, "reads": 96371},
-		{"tamanho": 12, "writes": 19562, "reads": 125345},
-		{"tamanho": 16, "writes": 23000, "reads": 133682},
-		{"tamanho": 20, "writes": 29970, "reads": 154921},
-		{"tamanho": 24, "writes": 35018, "reads": 169077},
-		{"tamanho": 28, "writes": 42166, "reads": 188973},
-		{"tamanho": 32, "writes": 39634, "reads": 170995}
+		{"tamanho": 4, "writes": 11737, "reads": 84369},
+		{"tamanho": 8, "writes": 14522, "reads": 110893},
+		{"tamanho": 12, "writes": 19562, "reads": 144907},
+		{"tamanho": 16, "writes": 23000, "reads": 156682},
+		{"tamanho": 20, "writes": 29970, "reads": 184891},
+		{"tamanho": 24, "writes": 35018, "reads": 204095},
+		{"tamanho": 28, "writes": 42166, "reads": 231139},
+		{"tamanho": 32, "writes": 39634, "reads": 210629}
 	]
 },
 {
 	"algoritmo": "NRU",
 	"resultado": [
-		{"tamanho": 4, "writes": 9555, "reads": 89127},
-		{"tamanho": 8, "writes": 11009, "reads": 150394},
-		{"tamanho": 12, "writes": 12977, "reads": 239485},
-		{"tamanho": 16, "writes": 14293, "reads": 273171},
-		{"tamanho": 20, "writes": 16986, "reads": 319929},
-		{"tamanho": 24, "writes": 19254, "reads": 347063},
-		{"tamanho": 28, "writes": 22223, "reads": 375947},
-		{"tamanho": 32, "writes": 20471, "reads": 348204}
+		{"tamanho": 4, "writes": 9578, "reads": 99116},
+		{"tamanho": 8, "writes": 10983, "reads": 161209},
+		{"tamanho": 12, "writes": 13141, "reads": 253075},
+		{"tamanho": 16, "writes": 14238, "reads": 286895},
+		{"tamanho": 20, "writes": 17038, "reads": 336135},
+		{"tamanho": 24, "writes": 19061, "reads": 364869},
+		{"tamanho": 28, "writes": 22150, "reads": 398431},
+		{"tamanho": 32, "writes": 20672, "reads": 368126}
 	]
 },
 {
 	"algoritmo": "SEG",
 	"resultado": [
-		{"tamanho": 4, "writes": 12337, "reads": 75616},
-		{"tamanho": 8, "writes": 16056, "reads": 99404},
-		{"tamanho": 12, "writes": 22413, "reads": 128841},
-		{"tamanho": 16, "writes": 26712, "reads": 137585},
-		{"tamanho": 20, "writes": 34191, "reads": 161603},
-		{"tamanho": 24, "writes": 39877, "reads": 179300},
-		{"tamanho": 28, "writes": 47785, "reads": 206400},
-		{"tamanho": 32, "writes": 45270, "reads": 186435}
+		{"tamanho": 4, "writes": 12337, "reads": 87953},
+		{"tamanho": 8, "writes": 16056, "reads": 115460},
+		{"tamanho": 12, "writes": 22413, "reads": 151254},
+		{"tamanho": 16, "writes": 26712, "reads": 164297},
+		{"tamanho": 20, "writes": 34191, "reads": 195794},
+		{"tamanho": 24, "writes": 39877, "reads": 219177},
+		{"tamanho": 28, "writes": 47785, "reads": 254185},
+		{"tamanho": 32, "writes": 45270, "reads": 231705}
 	]
 }],
 "compressor.log": [{
 	"algoritmo": "LRU",
 	"resultado": [
-		{"tamanho": 4, "writes": 702, "reads": 1399},
-		{"tamanho": 8, "writes": 897, "reads": 1844},
-		{"tamanho": 12, "writes": 1062, "reads": 2594},
-		{"tamanho": 16, "writes": 1162, "reads": 5863},
-		{"tamanho": 20, "writes": 14243, "reads": 18433},
-		{"tamanho": 24, "writes": 21008, "reads": 38641},
-		{"tamanho": 28, "writes": 32013, "reads": 46357},
-		{"tamanho": 32, "writes": 31786, "reads": 45944}
+		{"tamanho": 4, "writes": 702, "reads": 2101},
+		{"tamanho": 8, "writes": 897, "reads": 2741},
+		{"tamanho": 12, "writes": 1062, "reads": 3656},
+		{"tamanho": 16, "writes": 1162, "reads": 7025},
+		{"tamanho": 20, "writes": 14243, "reads": 32676},
+		{"tamanho": 24, "writes": 21008, "reads": 59649},
+		{"tamanho": 28, "writes": 32013, "reads": 78370},
+		{"tamanho": 32, "writes": 31786, "reads": 77730}
 	]
 },
 {
 	"algoritmo": "NRU",
 	"resultado": [
-		{"tamanho": 4, "writes": 606, "reads": 1626},
-		{"tamanho": 8, "writes": 779, "reads": 2899},
-		{"tamanho": 12, "writes": 1021, "reads": 7018},
-		{"tamanho": 16, "writes": 1084, "reads": 11985},
-		{"tamanho": 20, "writes": 2553, "reads": 69246},
-		{"tamanho": 24, "writes": 3161, "reads": 103790},
-		{"tamanho": 28, "writes": 12197, "reads": 144603},
-		{"tamanho": 32, "writes": 12112, "reads": 143277}
+		{"tamanho": 4, "writes": 596, "reads": 2233},
+		{"tamanho": 8, "writes": 788, "reads": 3695},
+		{"tamanho": 12, "writes": 1003, "reads": 7916},
+		{"tamanho": 16, "writes": 1098, "reads": 13206},
+		{"tamanho": 20, "writes": 2585, "reads": 72023},
+		{"tamanho": 24, "writes": 3172, "reads": 106535},
+		{"tamanho": 28, "writes": 12435, "reads": 158428},
+		{"tamanho": 32, "writes": 11994, "reads": 155754}
 	]
 },
 {
 	"algoritmo": "SEG",
 	"resultado": [
-		{"tamanho": 4, "writes": 714, "reads": 1430},
-		{"tamanho": 8, "writes": 929, "reads": 1944},
-		{"tamanho": 12, "writes": 1142, "reads": 2726},
-		{"tamanho": 16, "writes": 1223, "reads": 7032},
-		{"tamanho": 20, "writes": 17175, "reads": 28465},
-		{"tamanho": 24, "writes": 24812, "reads": 48039},
-		{"tamanho": 28, "writes": 38900, "reads": 53811},
-		{"tamanho": 32, "writes": 38694, "reads": 53281}
+		{"tamanho": 4, "writes": 714, "reads": 2144},
+		{"tamanho": 8, "writes": 929, "reads": 2873},
+		{"tamanho": 12, "writes": 1142, "reads": 3868},
+		{"tamanho": 16, "writes": 1223, "reads": 8255},
+		{"tamanho": 20, "writes": 17175, "reads": 45640},
+		{"tamanho": 24, "writes": 24812, "reads": 72851},
+		{"tamanho": 28, "writes": 38900, "reads": 92711},
+		{"tamanho": 32, "writes": 38694, "reads": 91975}
 	]
 }],
 "simulador.log": [{
 	"algoritmo": "LRU",
 	"resultado": [
-		{"tamanho": 4, "writes": 13730, "reads": 53985},
-		{"tamanho": 8, "writes": 18629, "reads": 82235},
-		{"tamanho": 12, "writes": 27533, "reads": 119371},
-		{"tamanho": 16, "writes": 31232, "reads": 124449},
-		{"tamanho": 20, "writes": 40509, "reads": 147123},
-		{"tamanho": 24, "writes": 50763, "reads": 165729},
-		{"tamanho": 28, "writes": 70037, "reads": 197502},
-		{"tamanho": 32, "writes": 57425, "reads": 149266}
+		{"tamanho": 4, "writes": 13730, "reads": 67715},
+		{"tamanho": 8, "writes": 18629, "reads": 100864},
+		{"tamanho": 12, "writes": 27533, "reads": 146904},
+		{"tamanho": 16, "writes": 31232, "reads": 155681},
+		{"tamanho": 20, "writes": 40509, "reads": 187632},
+		{"tamanho": 24, "writes": 50763, "reads": 216492},
+		{"tamanho": 28, "writes": 70037, "reads": 267539},
+		{"tamanho": 32, "writes": 57425, "reads": 206691}
 	]
 },
 {
 	"algoritmo": "NRU",
 	"resultado": [
-		{"tamanho": 4, "writes": 11478, "reads": 73469},
-		{"tamanho": 8, "writes": 13878, "reads": 165143},
-		{"tamanho": 12, "writes": 17464, "reads": 261580},
-		{"tamanho": 16, "writes": 19272, "reads": 291106},
-		{"tamanho": 20, "writes": 24119, "reads": 331264},
-		{"tamanho": 24, "writes": 28448, "reads": 350796},
-		{"tamanho": 28, "writes": 35116, "reads": 373217},
-		{"tamanho": 32, "writes": 31789, "reads": 307940}
+		{"tamanho": 4, "writes": 11509, "reads": 85025},
+		{"tamanho": 8, "writes": 13813, "reads": 178512},
+		{"tamanho": 12, "writes": 17296, "reads": 279769},
+		{"tamanho": 16, "writes": 19227, "reads": 310768},
+		{"tamanho": 20, "writes": 24070, "reads": 355569},
+		{"tamanho": 24, "writes": 28467, "reads": 380070},
+		{"tamanho": 28, "writes": 35143, "reads": 408507},
+		{"tamanho": 32, "writes": 32003, "reads": 341106}
 	]
 },
 {
 	"algoritmo": "SEG",
 	"resultado": [
-		{"tamanho": 4, "writes": 14529, "reads": 56779},
-		{"tamanho": 8, "writes": 20079, "reads": 86563},
-		{"tamanho": 12, "writes": 30051, "reads": 123470},
-		{"tamanho": 16, "writes": 35673, "reads": 129870},
-		{"tamanho": 20, "writes": 48000, "reads": 156022},
-		{"tamanho": 24, "writes": 61019, "reads": 178407},
-		{"tamanho": 28, "writes": 80727, "reads": 215979},
-		{"tamanho": 32, "writes": 69467, "reads": 164409}
+		{"tamanho": 4, "writes": 14529, "reads": 71308},
+		{"tamanho": 8, "writes": 20079, "reads": 106642},
+		{"tamanho": 12, "writes": 30051, "reads": 153521},
+		{"tamanho": 16, "writes": 35673, "reads": 165543},
+		{"tamanho": 20, "writes": 48000, "reads": 204022},
+		{"tamanho": 24, "writes": 61019, "reads": 239426},
+		{"tamanho": 28, "writes": 80727, "reads": 296706},
+		{"tamanho": 32, "writes": 69467, "reads": 233876}
 	]
 }],
 "matriz.log": [{
 	"algoritmo": "LRU",
 	"resultado": [
-		{"tamanho": 4, "writes": 9674, "reads": 38548},
-		{"tamanho": 8, "writes": 46114, "reads": 123410},
-		{"tamanho": 12, "writes": 53106, "reads": 202569},
-		{"tamanho": 16, "writes": 53053, "reads": 226175},
-		{"tamanho": 20, "writes": 53823, "reads": 251146},
-		{"tamanho": 24, "writes": 54479, "reads": 266526},
-		{"tamanho": 28, "writes": 55499, "reads": 286086},
-		{"tamanho": 32, "writes": 55137, "reads": 277710}
+		{"tamanho": 4, "writes": 9674, "reads": 48222},
+		{"tamanho": 8, "writes": 46114, "reads": 169524},
+		{"tamanho": 12, "writes": 53106, "reads": 255675},
+		{"tamanho": 16, "writes": 53053, "reads": 279228},
+		{"tamanho": 20, "writes": 53823, "reads": 304969},
+		{"tamanho": 24, "writes": 54479, "reads": 321005},
+		{"tamanho": 28, "writes": 55499, "reads": 341585},
+		{"tamanho": 32, "writes": 55137, "reads": 332847}
 	]
 },
 {
 	"algoritmo": "NRU",
 	"resultado": [
-		{"tamanho": 4, "writes": 7564, "reads": 71733},
-		{"tamanho": 8, "writes": 10445, "reads": 246301},
-		{"tamanho": 12, "writes": 13647, "reads": 449725},
-		{"tamanho": 16, "writes": 16042, "reads": 528050},
-		{"tamanho": 20, "writes": 24083, "reads": 597843},
-		{"tamanho": 24, "writes": 31760, "reads": 616686},
-		{"tamanho": 28, "writes": 40132, "reads": 634765},
-		{"tamanho": 32, "writes": 38901, "reads": 629240}
+		{"tamanho": 4, "writes": 7595, "reads": 79514},
+		{"tamanho": 8, "writes": 10484, "reads": 257183},
+		{"tamanho": 12, "writes": 13570, "reads": 463153},
+		{"tamanho": 16, "writes": 15967, "reads": 544144},
+		{"tamanho": 20, "writes": 24068, "reads": 622085},
+		{"tamanho": 24, "writes": 31853, "reads": 649037},
+		{"tamanho": 28, "writes": 40024, "reads": 674595},
+		{"tamanho": 32, "writes": 38750, "reads": 667206}
 	]
 },
 {
 	"algoritmo": "SEG",
 	"resultado": [
-		{"tamanho": 4, "writes": 11426, "reads": 42333},
-		{"tamanho": 8, "writes": 46832, "reads": 137599},
-		{"tamanho": 12, "writes": 53458, "reads": 206877},
-		{"tamanho": 16, "writes": 53519, "reads": 230812},
-		{"tamanho": 20, "writes": 54469, "reads": 258000},
-		{"tamanho": 24, "writes": 55193, "reads": 276057},
-		{"tamanho": 28, "writes": 56260, "reads": 304465},
-		{"tamanho": 32, "writes": 55907, "reads": 296126}
+		{"tamanho": 4, "writes": 11426, "reads": 53759},
+		{"tamanho": 8, "writes": 46832, "reads": 184431},
+		{"tamanho": 12, "writes": 53458, "reads": 260335},
+		{"tamanho": 16, "writes": 53519, "reads": 284331},
+		{"tamanho": 20, "writes": 54469, "reads": 312469},
+		{"tamanho": 24, "writes": 55193, "reads": 331250},
+		{"tamanho": 28, "writes": 56260, "reads": 360725},
+		{"tamanho": 32, "writes": 55907, "reads": 352033}
 	]
 }]
 }

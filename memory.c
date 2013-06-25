@@ -201,10 +201,9 @@ void check_modified(Memory *mem, int frame_i) {
         mem->stats.writes_to_disk += 1;
 
         DEBUG printvar(mem->stats.writes_to_disk);
-    } else { 
-        DEBUG printf("NAO! +1 Pagina lida\n"); 
-        mem->stats.page_faults += 1;
-    } 
+    }
+    DEBUG printf("+1 Pagina lida\n"); 
+    mem->stats.page_faults += 1;
 }
 
 /* Simula o carregamento de um quadro de página na memória física. */

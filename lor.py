@@ -6,14 +6,14 @@ import pygal
 import sys
 import math
 
-def draw_graph(histogram, num_lines, delta_lines, num_pages, delta_pages):
+def draw_graph(histogram, filename, num_lines, delta_lines, num_pages, delta_pages):
     line_chart = pygal.StackedLine(fill=True)
     line_chart.title = "Page index X Access - locality of reference"
     line_chart.x_labels = ["10^{}".format(p) for p in range(len(histogram))]
     total = 0.1 * num_lines
     for p in range(len(histogram[0])):
         line_chart.add(">{}".format((p+1)*delta_pages), [(histogram[l][p] * 100.0 / total) for l in range(len(histogram))])
-    line_chart.render_to_file('lor.svg')
+    line_chart.render_to_file('{}_lor.svg'.format(filename[:-4]))
 
 if __name__ == '__main__':
     page_size = 4
@@ -37,4 +37,4 @@ if __name__ == '__main__':
             page_index = int(line.split(' ')[0], base=16) >> (int(math.log(page_size*1024, 2)))
             histogram[int(i / delta_lines)][int(page_index / delta_pages)] += 1
 
-    draw_graph(histogram, num_lines, delta_lines, num_pages, delta_pages)
+    draw_graph(histogram, sys.argv[1], num_lines, delta_lines, num_pages, delta_pages)

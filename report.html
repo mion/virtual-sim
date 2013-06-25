@@ -8,18 +8,23 @@
         <meta name="author" content="">
         <link href="http://twitter.github.io/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
         <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+        <link href="report.css", rel="stylesheet" type="text/css">
     </head>
     <body>
         <div class="container">
             <br><br>
-            <b>PUC-Rio</b><br>
-            <b>INF1019 - Sistemas de Computação</b><br>
-            <b>Professor: Markus Endler</b><br>
-            <br>
-            <b>Gabriel Amaral Fuchs 0911869</b><br>
-            <b>Gabriel Vieira 0910417</b>
+            <ul class="inline">
+                <li><h4>PUC-Rio</h4></li>
+                <li><h4>INF1019 - Sistemas de Computação</h4></li>
+            </ul>
+            <ul class="inline">
+                <li><b>Professor:</b> Markus Endler</li>
+            </ul>
+            <ul class="inline">
+                <li><b>Alunos:</b> Gabriel Vieira (0910417) e Gabriel Amaral Fuchs (0911869)</li>
+            </ul>
             <br><br>
-            <center><h1>Relatório T2</h1></center>
+            <h1 class="text-center">Relatório T2</h1>
             <section>
                 <div class="page-header"><h2>Descrição</h2></div>
                 <p> O objetivo do trabalho é implementar e analisar o desempenho, de algoritmos de paginação. São NRU (não utilizada recentemente), LRU (menos recentemente utilizada) e SEG (segunda chance). Os algoritmos são testados em diferentes situações, com tamanhos de páginas diferentes, depois que isto é feito os resultados de eficiência são apresentados e comparados.</p>
@@ -50,23 +55,59 @@
             </section>
             <section>
                 <div class="page-header"><h2>Análise</h2></div>
-                <p>A seguir apresentamos os gráficos com o resultado das simulações. Para cada programa (arquivo de log), analisamos o desempenho de cada algoritmo com dois gráficos, um para <b>páginas escritas</b> (páginas que estavam "sujas" ao serem substituídas) e outro para <b>páginas lidas</b> (páginas carregadas na memória após um <i>page fault</i>). Páginas que foram carregadas antes da memória física estar cheia e páginas que não foram escritas ao final da simulação <b>não foram levadas em conta</b>.</p>
-                <center><h3>Compilador</h3></center>
+                <p>A seguir apresentamos os gráficos com o resultado das simulações. Para cada programa (arquivo de log), analisamos o desempenho de cada algoritmo com dois gráficos, um para <b>páginas escritas</b> (páginas que estavam "sujas" ao serem substituídas) e outro para <b>páginas lidas</b> (páginas carregadas na memória após um <i>page fault</i>). Páginas que foram carregadas antes da memória física estar cheia e páginas que não foram escritas ao final da simulação <b>não foram levadas em conta</b>. Mantendo o tamanho da memória física constante (128KB), varia-se o tamanho de página de 4KB à 32KB.</p>
+                <p>Também adicionamos um terceiro gráfico para cada caso, com índices de páginas virtuais acessados no eixo Y e os acessos ao longo do tempo no eixo X (ambos em porcentagem, pois são muitos pontos). Esse gráfico é uma tentativa de representar visualmente a <b>localidade de referência</b> (temporal e especial) de cada caso. Para o gerar o gráfico foi considerado um tamanho de página fixo de <b>4KB</b> (ou seja, nos gráficos de leitura/escrita corresponde ao primeiro ponto no X).</p>
+                <p>Uma <b>conclusão</b> sobre todos os gráficos, e o trabalho em geral, é apresentada ao final do relatório.</b></p>
+                <br>
+                <h3 class="text-center">Compilador</h3>
+                <p class="lead">
+                    Como era de se esperar, o algoritmo NRU foi o pior dos três em termos de páginas lidas, por ser o mais rudimentar.
+                </p>
                 <embed src="compilador_reads.svg" type="image/svg+xml" /> 
+                <p class="lead">
+                    No entanto, isso é compensado na sua performance para escritas de páginas, onde foi o que teve o melhor desempenho. Isso faz sentido, pois o NRU é o único algoritmo que leva o bit <b>M</b> em consideração, evitando rescritas de forma explícita.
+                </p>
                 <embed src="compilador_writes.svg" type="image/svg+xml" /> 
+                <p class="lead">
+                    O algoritmo LRU com a sua implementação teórica pode ser considerado "o melhor" pois ganhou em leituras e não foi o pior em páginas escritas.
+                </p>
+                <br>
+                <embed src="compilador_lor.svg" type="image/svg+xml" /> 
+                <p class="lead">Aqui vemos que as acessos do compilador possuem localidade razoável (para uma página 4KB) tanto <b>espacial</b>, porque a maior parte dos acessos caiu entre o índice 104857 e 209714 (intervalo relativamente pequeno), e <b>temporal</b>, pois essa distribuição dos acessos não variou muito longo do tempo.
+                </p>
                 <hr>
-                <center><h3>Compressor</h3></center>
+                <center><h3>Compressor</h3></center>                
+                <p class="lead">A ordem dos desempenhos se manteve, mas a performance de todos os algoritmos foi melhor em geral, especialmente para páginas menores que 16KB.</p>
                 <embed src="compressor_reads.svg" type="image/svg+xml" /> 
+                <p class="lead">Esse aumento no desempenho de todos os algoritmos poderia ser explicado por uma boa localidade de referência.</p>
                 <embed src="compressor_writes.svg" type="image/svg+xml" /> 
+                <p class="lead">A performance muito boa e quase idêntica dos três algoritmos para páginas de até 16KB também vem da localidade (que deve ser boa).</p>
+                <embed src="compressor_lor.svg" type="image/svg+xml" /> 
+                <p class="lead">De fato, verifica-se que a localidade de referência é excelente nesse caso. Provavelmente ela começa a ser ruim para uma página maior que 16KB, como vemos no gráfico anterior.</p>
                 <hr>
                 <center><h3>Simulador</h3></center>
-                <embed src="simulador_reads.svg" type="image/svg+xml" /> 
+                <p class="lead">Esse caso é semelhante ao primeiro, com um desempenho pior em todos os algoritmos.</p>
+                <embed src="simulador_reads.svg" type="image/svg+xml" />                
                 <embed src="simulador_writes.svg" type="image/svg+xml" /> 
+                <embed src="simulador_lor.svg" type="image/svg+xml" /> 
+                <p class="lead">A localidade de referência aqui é semelhante ao compilador, sendo um pouco pior por causa de uma maior variação no tempo.</p>
                 <hr>
                 <center><h3>Matriz</h3></center>
+                <p class="lead">Nesse último caso, apesar da ordem de continuar a mesma, o algoritmo LRU foi muito pior.</p>
                 <embed src="matriz_reads.svg" type="image/svg+xml" /> 
+                <p class="lead">Tanto para leitura/escrita, teve performance próxima ao do Segunda Chance.</p>
                 <embed src="matriz_writes.svg" type="image/svg+xml" /> 
+                <p class="lead">Como o LRU escolhe a página menos recentemente usada, essa variação na distribuição dos acessos ao longo do tempo pode ser um motivo para o seu desempenho ruim.</p>
+                <embed src="matriz_lor.svg" type="image/svg+xml" /> 
             </section>
+            <section>
+                <div class="page-header"><h2>Conclusão</h2></div>
+                <p>O melhor algoritmo foi o <b>LRU</b> (implementação teórica), seguido pelo <b>Segunda Chance</b> e pelo <b>NRU</b>.</p>
+                <p>Outra coisa interessante que podemos ver na simulação é o efeito do tamanho da página sobre a performance. Quando o tamanho aumenta muito, não é possível manter muitas páginas na memória o que acarreta em muitos page faults. Isto é um exemplo de <b>thrashing</b>.</p>
+
+                <p>Além disso, a simulação mostra claramente a relação entre a localidade de referência e o desempenho dos algoritmos, sejam quais forem. Acessos à endereços próximos de memória e à regiões recentemente utilizadas influenciam -- como era de se esperar -- a performance dos algoritmos de substituição de página.</p>
+            </section>
+            <br><br><br>
         </div>
     </body>
 </html>
