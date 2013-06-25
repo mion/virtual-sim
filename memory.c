@@ -273,6 +273,7 @@ Memory *MemoryInit(char *algo, int p_size_kb, int phys_mem_kb) {
         mem->frames[i].referenced = FALSE;
         mem->frames[i].modified = FALSE;
         mem->frames[i].last_access = -1;
+        mem->frames[i].first_access = -1;
         mem->frames[i].vir_i = NOT_IN_MEMORY;
     }
 
